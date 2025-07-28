@@ -43,6 +43,7 @@ class Car extends Model
 
     public function getMainImageAttribute()
     {
+        // D'abord, essayer de récupérer la première image de la relation
         $mainImage = $this->images()->first();
         if ($mainImage) {
             return $mainImage->image_url;
@@ -54,19 +55,12 @@ class Car extends Model
                 return $this->image;
             }
             
-            // Vérifier si l'image existe dans storage/app/public
-            if (file_exists(storage_path('app/public/' . $this->image))) {
-                return asset('storage/' . $this->image);
-            }
-            
-            // Vérifier si l'image existe dans public/images
-            if (file_exists(public_path('images/' . $this->image))) {
-                return asset('images/' . $this->image);
-            }
+            // Pour les images stockées dans storage/app/public
+            return asset('storage/' . $this->image);
         }
         
-        // Si aucune image n'est trouvée, retourner null
-        return null;
+        // Image par défaut si aucune image n'est trouvée
+        return asset('images/car-png-39071.png');
     }
 
     public function getFormattedPriceAttribute()
