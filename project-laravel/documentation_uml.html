@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation UML - Site de Vente de Voitures</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #F26522;
+            text-align: center;
+            border-bottom: 3px solid #F26522;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #F26522;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        .diagram-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+        }
+        .description {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .tech-item {
+            background: #f1f8e9;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #c8e6c9;
+        }
+        .features-list {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .features-list ul {
+            columns: 2;
+            column-gap: 30px;
+        }
+        .features-list li {
+            margin-bottom: 8px;
+        }
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Documentation UML - Site de Vente de Voitures</h1>
+        
+        <div class="description">
+            <h3>📋 Vue d'ensemble</h3>
+            <p>Cette documentation présente l'architecture UML complète du site web de vente de voitures "Mboa Cars", incluant les diagrammes de classes, cas d'utilisation, architecture MVC et flux de données.</p>
+        </div>
+
+        <h2>🏗️ 1. Diagramme de Classes UML</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+classDiagram
+    class User {
+        +id: int
+        +name: string
+        +email: string
+        +password: string
+        +phone: string
+        +email_verified_at: timestamp
+        +remember_token: string
+        +created_at: timestamp
+        +updated_at: timestamp
+        +cars()
+        +favorites()
+        +carsFavorited()
+    }
+
+    class Car {
+        +id: int
+        +brand: string
+        +model: string
+        +year: int
+        +price: decimal
+        +description: text
+        +image: string
+        +type: string
+        +city: string
+        +mileage: int
+        +state: string
+        +vin: string
+        +fuel_type: string
+        +address: string
+        +phone: string
+        +user_id: int
+        +features: json
+        +video_url: string
+        +is_published: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
+        +images()
+        +favorites()
+        +favoritedByUsers()
+        +user()
+        +getMainImageAttribute()
+        +getFormattedPriceAttribute()
+        +getFormattedMileageAttribute()
+        +scopePublished()
+        +scopeByUser()
+    }
+
+    class CarImage {
+        +id: int
+        +car_id: int
+        +image: string
+        +position: int
+        +created_at: timestamp
+        +updated_at: timestamp
+        +car()
+        +getImageUrlAttribute()
+    }
+
+    class Favorite {
+        +id: int
+        +user_id: int
+        +car_id: int
+        +created_at: timestamp
+        +updated_at: timestamp
+        +user()
+        +car()
+    }
+
+    User ||--o{ Car : "owns"
+    User ||--o{ Favorite : "has"
+    Car ||--o{ CarImage : "has"
+    Car ||--o{ Favorite : "favorited_by"
+    Car }o--|| User : "belongs_to"
+    CarImage }o--|| Car : "belongs_to"
+    Favorite }o--|| User : "belongs_to"
+    Favorite }o--|| Car : "belongs_to"
+            </div>
+        </div>
+
+        <h2>👥 2. Diagramme de Cas d'Utilisation</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph TD
+    A[Utilisateur] --> B[Consulter les voitures]
+    A --> C[Rechercher/Filtrer]
+    A --> D[Ajouter aux favoris]
+    A --> E[Voir détails voiture]
+    
+    F[Utilisateur Connecté] --> G[Publier une voiture]
+    F --> H[Gérer mes voitures]
+    F --> I[Modifier mes voitures]
+    F --> J[Supprimer mes voitures]
+    F --> K[Gérer les images]
+    F --> L[Voir mes favoris]
+    F --> M[Gérer mon profil]
+    
+    G --> N[Upload multiple images]
+    G --> O[Prévisualisation images]
+    
+    K --> P[Réorganiser images]
+    K --> Q[Supprimer images]
+    K --> R[Ajouter nouvelles images]
+            </div>
+        </div>
+
+        <h2>🏛️ 3. Architecture MVC</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph LR
+    A[Vue - Blade Templates] --> B[Contrôleur - CarController]
+    B --> C[Modèle - Car/User/Favorite]
+    C --> D[Base de données - MySQL]
+    
+    E[Routes] --> B
+    F[Middleware Auth] --> B
+    G[Validation] --> B
+    H[Storage] --> B
+            </div>
+        </div>
+
+        <h2>🔄 4. Flux de Données</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as Utilisateur
+    participant V as Vue
+    participant C as Contrôleur
+    participant M as Modèle
+    participant DB as Base de données
+    
+    U->>V: Accède à la liste des voitures
+    V->>C: CarController@index
+    C->>M: Car::published()
+    M->>DB: SELECT * FROM cars WHERE is_published = 1
+    DB-->>M: Résultats
+    M-->>C: Collection de voitures
+    C-->>V: Données + vue
+    V-->>U: Page avec voitures
+    
+    U->>V: Ajoute aux favoris
+    V->>C: CarController@addToFavorites
+    C->>M: Favorite::create()
+    M->>DB: INSERT INTO favorites
+    DB-->>M: Confirmation
+    C-->>V: Réponse JSON
+    V-->>U: Cœur rempli
+            </div>
+        </div>
+
+        <h2>🔄 4. Diagramme de Séquence (Ajout d'une voiture)</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+sequenceDiagram
+    participant U as Utilisateur
+    participant V as Vue
+    participant C as Contrôleur
+    participant M as Modèle
+    participant DB as Base de données
+    U->>V: Remplit le formulaire d'ajout
+    V->>C: POST /cars
+    C->>M: Car::create()
+    M->>DB: INSERT INTO cars
+    DB-->>M: ID voiture
+    M-->>C: Nouvelle voiture
+    C-->>V: Redirige vers la page de gestion
+    V-->>U: Affiche la confirmation
+            </div>
+        </div>
+
+        <h2>🔁 5. Diagramme d'Activité (Ajout d'une voiture)</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+flowchart TD
+    A(Début) --> B[Remplir le formulaire]
+    B --> C{Formulaire valide ?}
+    C -- Non --> D[Afficher erreurs]
+    C -- Oui --> E[Enregistrer la voiture]
+    E --> F[Uploader les images]
+    F --> G[Rediriger vers mes voitures]
+    G --> H(Fin)
+            </div>
+        </div>
+
+        <h2>🧩 6. Diagramme de Composants</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+componentDiagram
+    classDef ext fill:#f8f9fa,stroke:#F26522,stroke-width:2px;
+    Controller : CarController
+    Controller : ProfileController
+    Controller : AuthController
+    Model : Car
+    Model : User
+    Model : CarImage
+    Model : Favorite
+    View : Blade Templates
+    DB[(MySQL)]
+    Storage[(Laravel Storage)]
+    Controller --> Model
+    Controller --> View
+    Model --> DB
+    Controller --> Storage
+    View --> Controller
+            </div>
+        </div>
+
+        <h2>🌐 7. Diagramme de Déploiement</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+graph TD
+    subgraph Serveur Web
+        Nginx
+        PHPFPM
+    end
+    subgraph Docker
+        Nginx
+        PHPFPM
+        MySQL
+    end
+    Utilisateur-->|HTTP|Nginx
+    Nginx-->|FastCGI|PHPFPM
+    PHPFPM-->|SQL|MySQL
+    PHPFPM-->|Fichiers|Storage[(Stockage images)]
+            </div>
+        </div>
+
+        <h2>📦 8. Diagramme de Paquets (organisation du code)</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+flowchart TD
+    A[app/Models] -->|contient| B[Car, User, CarImage, Favorite]
+    A1[app/Http/Controllers] -->|contient| B1[CarController, ProfileController, AuthController]
+    A2[resources/views] -->|contient| B2[Blade Templates]
+    A3[database/migrations] -->|contient| B3[Tables]
+    A4[public/storage] -->|contient| B4[Images]
+            </div>
+        </div>
+
+        <h2>🧑‍💻 9. Diagramme d'Objets (exemple d'instances)</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+objectDiagram
+    User1 : User
+    User1.name = "Alice"
+    Car1 : Car
+    Car1.brand = "Toyota"
+    Car1.model = "Camry"
+    Car1.user = User1
+    CarImage1 : CarImage
+    CarImage1.image = "toyota1.jpg"
+    CarImage1.car = Car1
+    Favorite1 : Favorite
+    Favorite1.user = User1
+    Favorite1.car = Car1
+            </div>
+        </div>
+
+        <h2>🛠️ 5. Stack Technologique</h2>
+        <div class="tech-stack">
+            <div class="tech-item">
+                <strong>Backend</strong><br>
+                Laravel 10 (PHP)
+            </div>
+            <div class="tech-item">
+                <strong>Frontend</strong><br>
+                Bootstrap 5, JavaScript
+            </div>
+            <div class="tech-item">
+                <strong>Base de données</strong><br>
+                MySQL
+            </div>
+            <div class="tech-item">
+                <strong>Stockage</strong><br>
+                Laravel Storage
+            </div>
+            <div class="tech-item">
+                <strong>Containerisation</strong><br>
+                Docker (Nginx + PHP-FPM)
+            </div>
+            <div class="tech-item">
+                <strong>Icons</strong><br>
+                Font Awesome
+            </div>
+        </div>
+
+        <h2>✨ 6. Fonctionnalités Principales</h2>
+        <div class="features-list">
+            <ul>
+                <li><strong>Gestion des utilisateurs</strong> - Inscription, connexion, profil</li>
+                <li><strong>CRUD des voitures</strong> - Création, lecture, modification, suppression</li>
+                <li><strong>Gestion des images</strong> - Upload multiple, prévisualisation, réorganisation</li>
+                <li><strong>Système de favoris</strong> - Ajout/retrait, liste personnelle</li>
+                <li><strong>Recherche et filtres</strong> - Marque, modèle, prix, localisation</li>
+                <li><strong>Pagination</strong> - Navigation dans les résultats</li>
+                <li><strong>Interface responsive</strong> - Mobile/desktop</li>
+                <li><strong>Authentification</strong> - Sécurité des données</li>
+                <li><strong>Validation</strong> - Contrôle des données</li>
+                <li><strong>Stockage sécurisé</strong> - Gestion des fichiers</li>
+            </ul>
+        </div>
+
+        <h2>📊 7. Structure de la Base de Données</h2>
+        <div class="description">
+            <h3>Tables principales :</h3>
+            <ul>
+                <li><strong>users</strong> - Informations des utilisateurs</li>
+                <li><strong>cars</strong> - Détails des voitures</li>
+                <li><strong>car_images</strong> - Images des voitures avec position</li>
+                <li><strong>favorites</strong> - Relations utilisateur-voiture (favoris)</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <p><strong>Documentation générée pour Mboa Cars</strong></p>
+            <p>Date : <span id="current-date"></span></p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+        
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR');
+    </script>
+</body>
+</html> 
