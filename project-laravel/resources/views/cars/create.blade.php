@@ -284,7 +284,16 @@
 }
 
 .car-type-option input[type="radio"] {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .car-type-option input[type="radio"]:checked + label {
@@ -423,6 +432,65 @@
 </style>
 
 <script>
+// Debug: Test d'authentification
+fetch('/test-auth')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Auth status:', data);
+        if (!data.authenticated) {
+            alert('Vous n\'êtes pas connecté. Veuillez vous connecter d\'abord.');
+        } else {
+            console.log('✅ Utilisateur connecté:', data.user_name);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la vérification d\'authentification:', error);
+    });
+
+// Debug: Traçage de la soumission du formulaire
+document.getElementById('carForm').addEventListener('submit', function(e) {
+    console.log('🚀 Formulaire soumis!');
+    console.log('Action:', this.action);
+    console.log('Method:', this.method);
+    
+    // Vérifier si tous les champs requis sont remplis
+    const requiredFields = this.querySelectorAll('[required]');
+    let allValid = true;
+    let missingFields = [];
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            console.log('❌ Champ manquant:', field.name, 'Value:', field.value);
+            missingFields.push(field.name);
+            allValid = false;
+        } else {
+            console.log('✅ Champ OK:', field.name, 'Value:', field.value);
+        }
+    });
+    
+    if (!allValid) {
+        e.preventDefault();
+        alert('Veuillez remplir tous les champs requis: ' + missingFields.join(', '));
+        return;
+    }
+    
+    console.log('✅ Tous les champs sont valides, soumission en cours...');
+    
+    // Afficher les données du formulaire
+    const formData = new FormData(this);
+    console.log('📋 Données du formulaire:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key + ':', value);
+    }
+});
+
+// Debug: Traçage des clics sur le bouton
+document.querySelector('button[type="submit"]').addEventListener('click', function(e) {
+    console.log('🖱️ Bouton Add Car cliqué!');
+    console.log('Bouton:', this);
+    console.log('Form parent:', this.closest('form'));
+});
+
 // Upload Area Interactions
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('images');

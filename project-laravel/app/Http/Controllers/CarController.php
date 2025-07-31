@@ -126,43 +126,68 @@ class CarController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'brand' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'price' => 'required|numeric|min:0',
-            'type' => 'required|string|max:255',
-            'mileage' => 'required|integer|min:0',
-            'fuel_type' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
-            'vin' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'features' => 'nullable|array',
-            'images.*' => 'nullable|image|max:2048',
-            'video_url' => 'nullable|url',
+        \Log::info('Store method called', [
+            'user_id' => Auth::id(),
+            'request_data' => $request->all()
         ]);
 
-        $data = $request->all();
-        $data['user_id'] = Auth::id();
-        $data['features'] = $request->features ?? [];
+        try {
+            $request->validate([
+                'brand' => 'required|string|max:255',
+                'model' => 'required|string|max:255',
+                'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+                'price' => 'required|numeric|min:0',
+                'type' => 'required|string|max:255',
+                'mileage' => 'required|integer|min:0',
+                'fuel_type' => 'required|string|max:255',
+                'state' => 'required|string|max:255',
+                'city' => 'required|string|max:255',
+                'address' => 'required|string|max:255',
+                'phone' => 'required|string|max:255',
+                'vin' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'features' => 'nullable|array',
+                'images.*' => 'nullable|image|max:2048',
+                'video_url' => 'nullable|url',
+            ]);
 
-        $car = Car::create($data);
+            \Log::info('Validation passed');
 
-        // Gérer les images
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('cars', 'public');
-                $car->images()->create([
-                    'image' => $path,
-                    'position' => $index
-                ]);
+            $data = $request->all();
+            $data['user_id'] = Auth::id();
+            $data['features'] = $request->features ?? [];
+
+            \Log::info('Creating car with data', $data);
+
+            $car = Car::create($data);
+
+            \Log::info('Car created', ['car_id' => $car->id]);
+
+            // Gérer les images
+            if ($request->hasFile('images')) {
+                \Log::info('Processing images', ['files_count' => count($request->file('images'))]);
+                foreach ($request->file('images') as $index => $image) {
+                    $path = $image->store('cars', 'public');
+                    $car->images()->create([
+                        'image' => $path,
+                        'position' => $index
+                    ]);
+                    \Log::info('Image stored', ['path' => $path]);
+                }
             }
-        }
 
-        return redirect()->route('cars.my-cars')->with('success', 'Voiture ajoutée avec succès !');
+            \Log::info('Redirecting to my-cars');
+            return redirect()->route('cars.my-cars')->with('success', 'Voiture ajoutée avec succès !');
+
+        } catch (\Exception $e) {
+            \Log::error('Error in store method', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            
+            return back()->withErrors(['error' => 'Une erreur est survenue: ' . $e->getMessage()]);
+        }
     }
 
     /**

@@ -7,6 +7,21 @@ use App\Http\Controllers\HomeController;
 
 Route::get('/', [HomeController::class, 'index']);
 
+// Route de test pour vérifier l'authentification
+Route::get('/test-auth', function () {
+    if (auth()->check()) {
+        return response()->json([
+            'authenticated' => true,
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()->name
+        ]);
+    } else {
+        return response()->json([
+            'authenticated' => false
+        ]);
+    }
+});
+
 Route::get('/dashboard', function () {
     return redirect('/');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -33,6 +48,15 @@ Route::get('/favorites', [CarController::class, 'favorites'])->name('favorites')
 Route::middleware('auth')->group(function () {
     Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
     Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
+    
+    // Route de test pour déboguer
+    Route::post('/test-car-store', function () {
+        return response()->json([
+            'message' => 'Route accessible',
+            'user_id' => auth()->id(),
+            'request_data' => request()->all()
+        ]);
+    })->name('test.car.store');
 });
 
 // Routes publiques pour les voitures
