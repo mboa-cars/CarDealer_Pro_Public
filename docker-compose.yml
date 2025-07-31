@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./project-laravel       # ✅ Ton dossier Laravel réel
+      dockerfile: ../Dockerfile        # ✅ Dockerfile bien à la racine
+    container_name: laravel-app
+    working_dir: /var/www
+    volumes:
+      - ./project-laravel:/var/www     # ✅ Le code Laravel dans le conteneur PHP
+    networks:
+      - laravel
+
+  web:
+    image: nginx:alpine
+    container_name: laravel-web
+    ports:
+      - "8000:80"
+    volumes:
+      - ./project-laravel:/var/www                      # ✅ Le code Laravel dans le conteneur Nginx
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro      # ✅ Monté en lecture seule (propre)
+    depends_on:
+      - app
+    networks:
+      - laravel
+
+  mysql:
+    image: mysql:8
+    container_name: laravel-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - laravel
+
+volumes:
+  dbdata:
+
+networks:
+  laravel:
+    driver: bridge 
