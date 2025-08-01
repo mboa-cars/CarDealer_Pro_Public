@@ -4,8 +4,10 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BookmarkController;
 
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Route de test pour vérifier l'authentification
 Route::get('/test-auth', function () {
@@ -37,6 +39,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/cars/{car}/add-images', [CarController::class, 'addImages'])->name('cars.add-images');
     Route::post('/cars/{car}/update-image-positions', [CarController::class, 'updateImagePositions'])->name('cars.update-image-positions');
     Route::delete('/cars/{car}/images/{image}', [CarController::class, 'deleteImage'])->name('cars.delete-image');
+    
+    // Routes pour les bookmarks
+    Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index');
+    Route::post('/bookmarks', [BookmarkController::class, 'store'])->name('bookmarks.store');
+    Route::post('/bookmarks/quick', [BookmarkController::class, 'quickStore'])->name('bookmarks.quick-store');
+    Route::put('/bookmarks/{bookmark}', [BookmarkController::class, 'update'])->name('bookmarks.update');
+    Route::delete('/bookmarks/{bookmark}', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+    Route::patch('/bookmarks/{bookmark}/favorite', [BookmarkController::class, 'toggleFavorite'])->name('bookmarks.toggle-favorite');
+    Route::post('/bookmarks/reorder', [BookmarkController::class, 'reorder'])->name('bookmarks.reorder');
+    Route::get('/bookmarks/api', [BookmarkController::class, 'apiIndex'])->name('bookmarks.api');
+    Route::get('/bookmarks/search', [BookmarkController::class, 'search'])->name('bookmarks.search');
+    Route::post('/bookmarks/remove', [BookmarkController::class, 'removeByUrl'])->name('bookmarks.remove-by-url');
 });
 
 // Routes pour les favoris (accessibles à tous)
@@ -66,6 +80,17 @@ Route::get('/car-card/{car}', [App\Http\Controllers\CarController::class, 'carCa
 
 // Route::view('/profile', 'profile')->name('profile'); // Supprimé - conflit avec ProfileController
 
-
+// Routes d'administration
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::patch('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    Route::get('/cars', [AdminController::class, 'cars'])->name('cars');
+    Route::patch('/cars/{car}/toggle-publish', [AdminController::class, 'togglePublish'])->name('cars.toggle-publish');
+    Route::delete('/cars/{car}', [AdminController::class, 'deleteCar'])->name('cars.delete');
+    Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
+    Route::get('/bookmarks', [AdminController::class, 'bookmarks'])->name('bookmarks');
+});
 
 require __DIR__.'/auth.php';

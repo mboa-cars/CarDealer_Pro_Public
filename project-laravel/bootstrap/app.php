@@ -13,7 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'bookmark' => \App\Http\Middleware\BookmarkMiddleware::class,
         ]);
+        
+        // Appliquer le middleware bookmark globalement
+        $middleware->append(\App\Http\Middleware\BookmarkMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

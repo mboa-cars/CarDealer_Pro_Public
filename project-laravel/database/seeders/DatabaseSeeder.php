@@ -21,7 +21,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            AdminSeeder::class,
             CarSeeder::class,
+            BookmarkSeeder::class,
         ]);
     }
 }
