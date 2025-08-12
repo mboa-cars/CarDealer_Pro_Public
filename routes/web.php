@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\StripeWebhookController;
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -52,5 +53,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/cars/{car}', [AdminController::class, 'deleteCar'])->name('cars.delete');
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
 });
+
+// Webhook Stripe pour abonnement premium
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
 require __DIR__.'/auth.php';
