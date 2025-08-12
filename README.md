@@ -4,13 +4,17 @@
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC.svg)](https://tailwindcss.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
+[![GitHub](https://img.shields.io/github/stars/mboa-cars/CarDealer_Pro_Public?style=social)](https://github.com/mboa-cars/CarDealer_Pro_Public)
 
 > **Une application web moderne et complète** pour la gestion et la vente de voitures d'occasion, développée avec Laravel et une interface utilisateur moderne.
+>
+> **Nouveautés 2025 :** Système de favoris et bookmarks, configuration Docker améliorée, interface utilisateur enrichie.
 
 ## 📋 **Table des Matières**
 
 - [🎯 Vue d'ensemble](#-vue-densemble)
 - [✨ Fonctionnalités](#-fonctionnalités)
+- [🆕 Fonctionnalités Récentes](#-fonctionnalités-récentes)
 - [🛠️ Technologies](#️-technologies)
 - [🚀 Installation Rapide](#-installation-rapide)
 - [🐳 Installation avec Docker](#-installation-avec-docker)
@@ -20,6 +24,7 @@
 - [🧪 Tests](#-tests)
 - [📦 Déploiement](#-déploiement)
 - [🤝 Contribution](#-contribution)
+- [🗺️ Roadmap](#-roadmap)
 
 ## 🎯 **Vue d'ensemble**
 
@@ -30,8 +35,18 @@
 - ✅ **Faciliter la vente** de voitures d'occasion
 - ✅ **Simplifier la recherche** de véhicules
 - ✅ **Gérer les favoris** des utilisateurs
+- ✅ **Système de bookmarks** pour retrouver rapidement ses annonces préférées
 - ✅ **Offrir une interface moderne** et responsive
 - ✅ **Assurer la sécurité** des données utilisateur
+
+## 🆕 **Fonctionnalités Récentes**
+
+- ⭐ Système de favoris et bookmarks complet
+- 🐳 Docker prêt à l'emploi (installation simplifiée)
+- 📱 Interface utilisateur enrichie et animations modernes
+- 🔔 Notifications toast pour actions utilisateur
+- 📊 Nouvelle structure de base de données optimisée
+- 🛡️ Sécurité renforcée (validation, sessions, etc.)
 
 ## ✨ **Fonctionnalités**
 
@@ -677,3 +692,19 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC.svg)](https://tailwindcss.com)
 
 </div>
+
+## 🗺️ **Roadmap**
+
+- [x] Système de favoris et bookmarks
+- [x] Installation Docker simplifiée
+- [x] Notifications toast et interface enrichie
+- [ ] Ajout d’un module de chat entre acheteurs/vendeurs
+- [ ] Statistiques avancées pour les annonces
+- [ ] API publique pour intégration tierce
+
+## 🔗 **Liens Utiles**
+
+- [Documentation Laravel](https://laravel.com/docs)
+- [Documentation Tailwind CSS](https://tailwindcss.com/docs)
+- [Documentation Docker](https://docs.docker.com)
+- [Dépôt GitHub](https://github.com/mboa-cars/CarDealer_Pro_Public)
