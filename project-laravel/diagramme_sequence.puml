@@ -1,0 +1,63 @@
+@startuml CarDealer_Pro_Sequence_Diagram
+
+!theme plain
+skinparam backgroundColor white
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 20
+skinparam maxmessagesize 60
+
+title CarDealer Pro - Diagramme de Séquence - Ajout d'une Voiture
+
+actor User as U
+participant "Browser" as B
+participant "CarController" as CC
+participant "Car Model" as CM
+participant "CarImage Model" as CIM
+participant "Database" as DB
+
+== Authentification ==
+U -> B: Accède à /cars/create
+B -> CC: GET /cars/create
+CC -> B: Retourne la vue create
+B -> U: Affiche le formulaire
+
+== Saisie des données ==
+U -> B: Remplit le formulaire
+U -> B: Sélectionne des images
+B -> B: Prévisualise les images
+
+== Soumission du formulaire ==
+U -> B: Clique sur "Add Car"
+B -> CC: POST /cars (avec données)
+activate CC
+
+== Validation ==
+CC -> CC: Valide les données
+note right: Validation des champs requis\n- brand, model, year, price\n- type, mileage, fuel_type\n- state, city, address, phone, vin
+
+== Création de la voiture ==
+CC -> CM: create($data)
+activate CM
+CM -> DB: INSERT INTO cars
+DB -> CM: Retourne l'ID de la voiture
+CM -> CC: Retourne l'objet Car
+deactivate CM
+
+== Gestion des images ==
+alt Images présentes
+    loop Pour chaque image
+        CC -> CIM: create([image, position])
+        activate CIM
+        CIM -> DB: INSERT INTO car_images
+        DB -> CIM: Confirmation
+        CIM -> CC: Image créée
+        deactivate CIM
+    end
+end
+
+== Redirection ==
+CC -> B: Redirect vers /my-cars
+deactivate CC
+B -> U: Affiche la page "Mes Voitures"
+
+@enduml 

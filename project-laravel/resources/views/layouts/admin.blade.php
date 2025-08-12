@@ -19,6 +19,9 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Navigation moderne avec glassmorphism -->
@@ -72,6 +75,14 @@
                         </a>
                     </li>
                     <li class="nav-item me-2">
+                        <a class="nav-link {{ request()->routeIs('admin.subscriptions') ? 'active' : '' }}" href="{{ route('admin.subscriptions') }}" style="color: {{ request()->routeIs('admin.subscriptions') ? '#F26522' : '#666' }}; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 12px; transition: all 0.3s ease; position: relative;">
+                            <i class="fas fa-user-friends me-2"></i>Abonnements
+                            @if(request()->routeIs('admin.subscriptions'))
+                                <div class="position-absolute" style="bottom: 5px; left: 50%; transform: translateX(-50%); width: 20px; height: 3px; background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); border-radius: 2px;"></div>
+                            @endif
+                        </a>
+                    </li>
+                    <li class="nav-item me-2">
                         <a class="nav-link {{ request()->routeIs('admin.statistics') ? 'active' : '' }}" href="{{ route('admin.statistics') }}" style="color: {{ request()->routeIs('admin.statistics') ? '#F26522' : '#666' }}; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 12px; transition: all 0.3s ease; position: relative;">
                             <i class="fas fa-chart-bar me-2"></i>Statistiques
                             @if(request()->routeIs('admin.statistics'))
@@ -83,6 +94,14 @@
                         <a class="nav-link {{ request()->routeIs('admin.bookmarks') ? 'active' : '' }}" href="{{ route('admin.bookmarks') }}" style="color: {{ request()->routeIs('admin.bookmarks') ? '#F26522' : '#666' }}; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 12px; transition: all 0.3s ease; position: relative;">
                             <i class="fas fa-bookmark me-2"></i>Bookmarks
                             @if(request()->routeIs('admin.bookmarks'))
+                                <div class="position-absolute" style="bottom: 5px; left: 50%; transform: translateX(-50%); width: 20px; height: 3px; background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); border-radius: 2px;"></div>
+                            @endif
+                        </a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a class="nav-link {{ request()->routeIs('admin.plans') ? 'active' : '' }}" href="{{ route('admin.plans') }}" style="color: {{ request()->routeIs('admin.plans') ? '#F26522' : '#666' }}; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 12px; transition: all 0.3s ease; position: relative;">
+                            <i class="fas fa-crown me-2"></i>Plans
+                            @if(request()->routeIs('admin.plans'))
                                 <div class="position-absolute" style="bottom: 5px; left: 50%; transform: translateX(-50%); width: 20px; height: 3px; background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); border-radius: 2px;"></div>
                             @endif
                         </a>

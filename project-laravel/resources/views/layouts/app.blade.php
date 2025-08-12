@@ -93,6 +93,9 @@
         @yield('content')
     </div>
 
+    <!-- Bouton de bookmark flottant -->
+    <x-bookmark-button />
+
     <!-- Footer moderne -->
     <footer class="footer-modern" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color: white; margin-top: 80px; position: relative; overflow: hidden;">
         <!-- Effet de fond animé -->

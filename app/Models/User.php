@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'is_admin',
     ];
 
     /**
@@ -60,5 +61,29 @@ class User extends Authenticatable
     public function cars()
     {
         return $this->hasMany(Car::class);
+    }
+
+    /**
+     * Vérifier si l'utilisateur est administrateur
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin === true;
+    }
+
+    /**
+     * Définir l'utilisateur comme administrateur
+     */
+    public function makeAdmin(): void
+    {
+        $this->update(['is_admin' => true]);
+    }
+
+    /**
+     * Retirer les droits d'administrateur
+     */
+    public function removeAdmin(): void
+    {
+        $this->update(['is_admin' => false]);
     }
 }

@@ -19,6 +19,11 @@
                         <x-nav-link :href="route('favorites')" :active="request()->routeIs('favorites')">
                             {{ __('Favoris') }}
                         </x-nav-link>
+                        @if(auth()->user()->isAdmin())
+                            <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                                {{ __('Administration') }}
+                            </x-nav-link>
+                        @endif
                     @endauth
                 </div>
             </div>

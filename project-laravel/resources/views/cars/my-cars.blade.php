@@ -10,10 +10,31 @@
                     <h2 class="fw-bold mb-1" style="color: #333; font-size: 2.2rem;">My Cars</h2>
                     <p class="text-muted mb-0" style="font-size: 1rem;">Manage and organize your car listings</p>
                 </div>
-                <a href="{{ route('cars.create') }}" class="btn-modern">
-                    <i class="fas fa-plus me-2"></i>Add new Car
-                </a>
+                <div class="d-flex gap-2">
+                    @php($canPublish = auth()->user()->canPublishMoreCars())
+                    <a href="{{ route('cars.create') }}" class="btn-modern {{ $canPublish ? '' : 'disabled' }}" {{ $canPublish ? '' : 'aria-disabled=true tabindex=-1' }}>
+                        <i class="fas fa-plus me-2"></i>Add new Car
+                    </a>
+                    @unless($canPublish || auth()->user()->isAdmin())
+                        <a href="{{ route('plans.index') }}" class="btn-upgrade">
+                            <i class="fas fa-crown me-2"></i>Mettre à niveau (Premium)
+                        </a>
+                    @endunless
+                </div>
             </div>
+
+            @php($limit = auth()->user()->car_limit)
+            @if(!$canPublish && !auth()->user()->isAdmin())
+            <div class="alert alert-warning border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); color: #212529; border-radius: 12px;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle me-3" style="font-size: 1.2rem;"></i>
+                    <div>
+                        <strong>Limite atteinte:</strong> Vous avez atteint la limite de {{ $limit }} voitures pour votre plan Standard. 
+                        <a href="{{ route('plans.index') }}" class="text-dark fw-bold text-decoration-underline">Passez en Premium</a> pour publier sans limite.
+                    </div>
+                </div>
+            </div>
+            @endif
 
             @if(session('success'))
             <div class="alert alert-success border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border-radius: 12px;">
@@ -42,6 +63,31 @@
                     <h5 class="mb-0 fw-bold" style="color: #333; font-size: 1.3rem;">
                         <i class="fas fa-car me-2" style="color: #F26522;"></i>Car Listings
                     </h5>
+                    @php($current = $cars->total())
+                    @if(!auth()->user()->isAdmin())
+                        @php($limit = auth()->user()->car_limit)
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="text-muted">Publications: {{ $limit === null ? $current . ' / ∞' : $current . ' / ' . $limit }}</small>
+                                @if($limit !== null)
+                                    @php($percent = min(100, intval($current / max($limit,1) * 100)))
+                                    <small class="text-muted">{{ $percent }}%</small>
+                                @endif
+                            </div>
+                            <div class="progress" style="height: 10px; background: #f1f3f5; border-radius: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: {{ $limit === null ? 100 : min(100, intval($current / max($limit,1) * 100)) }}%; background: linear-gradient(135deg, #F26522 0%, #ea6500 100%);" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="text-muted">Publications: {{ $current }} (Illimité)</small>
+                            </div>
+                            <div class="progress" style="height: 10px; background: #f1f3f5; border-radius: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: 100%; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <div class="card-body" style="padding: 1.5rem;">
                     @if($cars->count() > 0)

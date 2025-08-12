@@ -196,27 +196,106 @@
 
             <!-- Seller Information -->
             <div class="bg-light rounded-4 p-4 mb-4" style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border: 1px solid #e9ecef;">
-                <h5 class="fw-bold mb-3" style="color: #2c3e50;">Seller Information</h5>
+                <h5 class="fw-bold mb-3" style="color: #2c3e50;">Informations du vendeur</h5>
                 <div class="d-flex align-items-center mb-3">
                     <div class="bg-orange rounded-circle d-flex align-items-center justify-content-center me-3" style="width:60px;height:60px; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.3);">
                         <i class="fas fa-user text-white fa-lg"></i>
                     </div>
                     <div>
                         <div class="fw-bold fs-5" style="color: #2c3e50;">{{ $car->user ? $car->user->name : 'Elva Graham' }}</div>
-                        <div class="text-muted">{{ $car->user ? $car->user->cars()->count() : '26' }} cars</div>
+                        <div class="text-muted">{{ $car->user ? $car->user->cars()->count() : '26' }} voitures</div>
+                        @if($car->user && $car->user->average_rating)
+                            <div class="d-flex align-items-center mt-1">
+                                <div class="stars-display me-2">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star {{ $i <= $car->user->average_rating ? 'text-warning' : 'text-muted' }}" style="font-size: 0.8rem;"></i>
+                                    @endfor
+                                </div>
+                                <small class="text-muted">{{ $car->user->average_rating }}/5 ({{ $car->user->reviews_count }} avis)</small>
+                            </div>
+                        @endif
                     </div>
                 </div>
-                <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center justify-content-between mb-3">
                     <span class="fw-bold fs-5" style="color:#F26522;">{{ $car->phone ?? '123456***' }}</span>
-                    <a href="#" class="btn btn-orange btn-sm rounded-pill" style="padding: 8px 16px;">view full number</a>
+                    <a href="#" class="btn btn-orange btn-sm rounded-pill" style="padding: 8px 16px;">voir le numéro complet</a>
+                </div>
+                
+                <!-- Boutons d'action pour le vendeur -->
+                <div class="seller-action-buttons">
+                    <a href="{{ route('reviews.seller', $car->user->id) }}" class="btn btn-reviews">
+                        <div class="btn-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="btn-content">
+                            <span class="btn-title">Voir les avis</span>
+                            <span class="btn-subtitle">{{ $car->user->reviews_count ?? 0 }} avis</span>
+                        </div>
+                        <div class="btn-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                    
+                    @auth
+                        @if(auth()->id() !== $car->user_id)
+                            <a href="{{ route('reviews.create', $car->id) }}" class="btn btn-rate-seller">
+                                <div class="btn-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="btn-content">
+                                    <span class="btn-title">Noter ce vendeur</span>
+                                    <span class="btn-subtitle">Partager votre expérience</span>
+                                </div>
+                                <div class="btn-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-login-to-rate">
+                            <div class="btn-icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="btn-content">
+                                <span class="btn-title">Connectez-vous</span>
+                                <span class="btn-subtitle">Pour noter ce vendeur</span>
+                            </div>
+                            <div class="btn-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </a>
+                    @endauth
                 </div>
             </div>
 
             <!-- Subscribe Button -->
             <div class="mt-4">
-                <button class="btn btn-danger btn-lg w-100 rounded-pill" style="padding: 15px; font-weight: 600; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);">
-                    <i class="fas fa-play me-2"></i>Subscribe
-                </button>
+                @auth
+                    @if(auth()->id() !== $car->user_id)
+                        <button 
+                            id="subscribe-btn" 
+                            class="btn btn-lg w-100 rounded-pill subscription-btn {{ $isFollowing ? 'btn-outline-danger' : 'btn-danger' }}" 
+                            style="padding: 15px; font-weight: 600; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); transition: all 0.3s ease;"
+                            onclick="toggleSubscription({{ $car->user_id }})"
+                        >
+                            <i class="fas {{ $isFollowing ? 'fa-check' : 'fa-play' }} me-2"></i>
+                            <span id="subscribe-text">{{ $isFollowing ? 'Abonné' : 'S\'abonner' }}</span>
+                        </button>
+                        <div class="text-center mt-2">
+                            <small class="text-muted">
+                                <span id="followers-count">{{ $followersCount }}</span> abonné{{ $followersCount > 1 ? 's' : '' }}
+                            </small>
+                        </div>
+                    @else
+                        <div class="alert alert-info rounded-pill text-center" style="background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); border: none;">
+                            <i class="fas fa-info-circle me-2"></i>C'est votre annonce
+                        </div>
+                    @endif
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-danger btn-lg w-100 rounded-pill" style="padding: 15px; font-weight: 600; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);">
+                        <i class="fas fa-sign-in-alt me-2"></i>Connectez-vous pour vous abonner
+                    </a>
+                @endauth
             </div>
         </div>
     </div>
@@ -523,5 +602,341 @@ function showNotification(message, type) {
 .spec-item strong {
     font-size: 1rem;
 }
+
+.subscription-btn {
+    transition: all 0.3s ease;
+}
+
+.subscription-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4) !important;
+}
+
+/* Styles pour les boutons d'action du vendeur */
+.seller-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.seller-action-buttons .btn {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border: none;
+    position: relative;
+    overflow: hidden;
+    min-height: 70px;
+}
+
+.seller-action-buttons .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.seller-action-buttons .btn:hover::before {
+    left: 100%;
+}
+
+.seller-action-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.btn-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.btn-content {
+    flex: 1;
+    text-align: left;
+}
+
+.btn-title {
+    display: block;
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.btn-subtitle {
+    display: block;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.btn-arrow {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.seller-action-buttons .btn:hover .btn-arrow {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(3px);
+}
+
+/* Bouton Voir les avis */
+.btn-reviews {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-reviews:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.btn-reviews .btn-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Bouton Noter ce vendeur */
+.btn-rate-seller {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+}
+
+.btn-rate-seller:hover {
+    background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+    box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4);
+}
+
+.btn-rate-seller .btn-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Bouton Connectez-vous */
+.btn-login-to-rate {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-login-to-rate:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.btn-login-to-rate .btn-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Animation d'entrée pour les boutons */
+.seller-action-buttons .btn {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.seller-action-buttons .btn:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.seller-action-buttons .btn:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design pour les boutons */
+@media (max-width: 768px) {
+    .seller-action-buttons .btn {
+        padding: 0.875rem 1rem;
+        min-height: 60px;
+    }
+    
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        margin-right: 0.75rem;
+    }
+    
+    .btn-title {
+        font-size: 0.95rem;
+    }
+    
+    .btn-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .btn-arrow {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Effet de focus pour l'accessibilité */
+.seller-action-buttons .btn:focus {
+    outline: 3px solid rgba(59, 130, 246, 0.5);
+    outline-offset: 2px;
+}
+
+/* Animation de pulsation pour attirer l'attention */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.btn-rate-seller {
+    animation: slideInUp 0.6s ease-out, pulse 2s ease-in-out infinite 1s;
+}
 </style>
+
+<script>
+// Fonction pour basculer l'abonnement
+async function toggleSubscription(sellerId) {
+    const btn = document.getElementById('subscribe-btn');
+    const icon = btn.querySelector('i');
+    const text = document.getElementById('subscribe-text');
+    const followersCount = document.getElementById('followers-count');
+    
+    // Désactiver le bouton pendant la requête
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    
+    try {
+        const response = await fetch(`/subscribe/${sellerId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mettre à jour l'interface
+            if (data.is_subscribed) {
+                // Maintenant abonné
+                btn.className = 'btn btn-lg w-100 rounded-pill subscription-btn btn-outline-danger';
+                icon.className = 'fas fa-check me-2';
+                text.textContent = 'Abonné';
+            } else {
+                // Plus abonné
+                btn.className = 'btn btn-lg w-100 rounded-pill subscription-btn btn-danger';
+                icon.className = 'fas fa-play me-2';
+                text.textContent = 'S\'abonner';
+            }
+            
+            // Mettre à jour le nombre d'abonnés
+            followersCount.textContent = data.followers_count;
+            
+            // Afficher un message de succès
+            showNotification(data.message, 'success');
+        } else {
+            showNotification(data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
+    } finally {
+        // Réactiver le bouton
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
+}
+
+// Fonction pour afficher les notifications
+function showNotification(message, type) {
+    // Créer l'élément de notification
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+    notification.style.cssText = `
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    notification.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+            <span>${message}</span>
+            <button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    // Ajouter au DOM
+    document.body.appendChild(notification);
+    
+    // Supprimer automatiquement après 5 secondes
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Ajouter les styles d'animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .stars-display {
+        display: inline-flex;
+        gap: 2px;
+    }
+`;
+document.head.appendChild(style);
+</script>
 @endsection 

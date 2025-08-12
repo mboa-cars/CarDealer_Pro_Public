@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -40,6 +41,16 @@ Route::delete('/cars/{car}', [CarController::class, 'destroy'])->middleware('aut
 
 // Route::view('/profile', 'profile')->name('profile'); // Supprimé - conflit avec ProfileController
 
-
+// Routes d'administration
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::patch('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    Route::get('/cars', [AdminController::class, 'cars'])->name('cars');
+    Route::patch('/cars/{car}/toggle-publish', [AdminController::class, 'togglePublish'])->name('cars.toggle-publish');
+    Route::delete('/cars/{car}', [AdminController::class, 'deleteCar'])->name('cars.delete');
+    Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
+});
 
 require __DIR__.'/auth.php';

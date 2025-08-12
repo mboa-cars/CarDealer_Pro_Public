@@ -12,6 +12,42 @@ use Illuminate\Support\Facades\DB;
 class AdminController extends Controller
 {
     /**
+     * Liste de tous les abonnements (admin)
+     */
+    public function subscriptions()
+    {
+        $subscriptions = \App\Models\Subscription::with(['subscriber', 'seller'])->latest('subscribed_at')->paginate(30);
+        return view('admin.subscriptions', compact('subscriptions'));
+    }
+
+    /**
+     * Vue plans/abonnements utilisateurs (répartition standard/premium, export CSV)
+     */
+    public function userPlans(Request $request)
+    {
+        $standardUsers = User::where('plan', 'standard')->withCount('cars')->get();
+        $premiumUsers = User::where('plan', 'premium')->withCount('cars')->get();
+
+        $stats = [
+            'standard' => $standardUsers->count(),
+            'premium' => $premiumUsers->count(),
+        ];
+
+        if ($request->get('export') === 'csv') {
+            $rows = collect([['ID', 'Nom', 'Email', 'Plan', 'Voitures']])
+                ->merge($standardUsers->map(fn($u) => [$u->id, $u->name, $u->email, 'standard', $u->cars_count]))
+                ->merge($premiumUsers->map(fn($u) => [$u->id, $u->name, $u->email, 'premium', $u->cars_count]));
+
+            $csv = $rows->map(fn($r) => implode(',', array_map(fn($v) => '"'.str_replace('"', '""', $v).'"', $r)))->implode("\n");
+            return response($csv, 200, [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="user_plans.csv"',
+            ]);
+        }
+
+        return view('admin.plans.index', compact('standardUsers', 'premiumUsers', 'stats'));
+    }
+    /**
      * Dashboard d'administration
      */
     public function dashboard()
@@ -70,6 +106,11 @@ class AdminController extends Controller
             }
         }
 
+        // Filtre par plan (standard | premium)
+        if ($request->filled('plan') && in_array($request->plan, ['standard', 'premium'], true)) {
+            $query->where('plan', $request->plan);
+        }
+
         // Tri
         switch ($request->get('sort', 'latest')) {
             case 'oldest':
@@ -87,7 +128,12 @@ class AdminController extends Controller
 
         $users = $query->paginate(20)->withQueryString();
 
-        return view('admin.users.index', compact('users'));
+        $planStats = [
+            'standard' => User::where('plan', 'standard')->count(),
+            'premium' => User::where('plan', 'premium')->count(),
+        ];
+
+        return view('admin.users.index', compact('users', 'planStats'));
     }
 
     /**
@@ -160,32 +206,146 @@ class AdminController extends Controller
      */
     public function statistics()
     {
-        $stats = [
-            'users_by_month' => User::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-                ->whereYear('created_at', date('Y'))
-                ->groupBy('month')
-                ->pluck('count', 'month'),
-            
-            'cars_by_brand' => Car::selectRaw('brand, COUNT(*) as count')
+        // Statistiques générales
+        $generalStats = [
+            'total_users' => User::count(),
+            'admin_users' => User::where('is_admin', true)->count(),
+            'regular_users' => User::where('is_admin', false)->count(),
+            'total_cars' => Car::count(),
+            'published_cars' => Car::where('is_published', true)->count(),
+            'unpublished_cars' => Car::where('is_published', false)->count(),
+            'total_favorites' => Favorite::count(),
+            'avg_price' => Car::where('is_published', true)->avg('price') ?? 0,
+            'min_price' => Car::where('is_published', true)->min('price') ?? 0,
+            'max_price' => Car::where('is_published', true)->max('price') ?? 0,
+        ];
+
+        // Données pour les graphiques
+        $chartData = [
+            // Top des marques
+            'brands' => Car::selectRaw('brand, COUNT(*) as count')
+                ->where('is_published', true)
+                ->whereNotNull('brand')
                 ->groupBy('brand')
                 ->orderBy('count', 'desc')
-                ->take(10)
+                ->take(8)
                 ->get(),
             
-            'cars_by_state' => Car::selectRaw('state, COUNT(*) as count')
+            // Voitures par état
+            'states' => Car::selectRaw('state, COUNT(*) as count')
+                ->where('is_published', true)
                 ->whereNotNull('state')
                 ->groupBy('state')
                 ->orderBy('count', 'desc')
                 ->take(10)
                 ->get(),
             
-            'bookmarks_by_category' => Bookmark::selectRaw('category, COUNT(*) as count')
-                ->groupBy('category')
-                ->orderBy('count', 'desc')
+            // Prix moyen par marque
+            'price_by_brand' => Car::selectRaw('brand, AVG(price) as avg_price, COUNT(*) as count')
+                ->where('is_published', true)
+                ->whereNotNull('brand')
+                ->whereNotNull('price')
+                ->groupBy('brand')
+                ->having('count', '>=', 2) // Au moins 2 voitures par marque
+                ->orderBy('avg_price', 'desc')
+                ->take(6)
+                ->get(),
+            
+            // Évolution mensuelle des inscriptions
+            'users_by_month' => User::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                ->whereYear('created_at', date('Y'))
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get(),
+            
+            // Évolution mensuelle des voitures
+            'cars_by_month' => Car::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                ->whereYear('created_at', date('Y'))
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get(),
+            
+            // Favoris par mois
+            'favorites_by_month' => Favorite::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                ->whereYear('created_at', date('Y'))
+                ->groupBy('month')
+                ->orderBy('month')
                 ->get(),
         ];
 
-        return view('admin.statistics', compact('stats'));
+        // Statistiques avancées et uniques
+        $advancedStats = [
+            // Tendances hebdomadaires (7 derniers jours)
+            'weekly_trends' => [
+                'users' => User::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                    ->where('created_at', '>=', now()->subDays(7))
+                    ->groupBy('date')
+                    ->orderBy('date')
+                    ->get(),
+                'cars' => Car::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                    ->where('created_at', '>=', now()->subDays(7))
+                    ->groupBy('date')
+                    ->orderBy('date')
+                    ->get(),
+                'favorites' => Favorite::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                    ->where('created_at', '>=', now()->subDays(7))
+                    ->groupBy('date')
+                    ->orderBy('date')
+                    ->get(),
+            ],
+            
+            // Analyse de la performance par heure (activité des utilisateurs)
+            'hourly_activity' => User::selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
+                ->groupBy('hour')
+                ->orderBy('hour')
+                ->get(),
+            
+            // Statistiques de croissance
+            'growth_stats' => [
+                'users_growth' => [
+                    'current_month' => User::whereMonth('created_at', now()->month)
+                        ->whereYear('created_at', now()->year)->count(),
+                    'last_month' => User::whereMonth('created_at', now()->subMonth()->month)
+                        ->whereYear('created_at', now()->subMonth()->year)->count(),
+                ],
+                'cars_growth' => [
+                    'current_month' => Car::whereMonth('created_at', now()->month)
+                        ->whereYear('created_at', now()->year)->count(),
+                    'last_month' => Car::whereMonth('created_at', now()->subMonth()->month)
+                        ->whereYear('created_at', now()->subMonth()->year)->count(),
+                ],
+            ],
+            
+            // Analyse des prix par tranche
+            'price_ranges' => [
+                'budget' => Car::where('is_published', true)
+                    ->where('price', '<', 15000)->count(),
+                'mid_range' => Car::where('is_published', true)
+                    ->whereBetween('price', [15000, 50000])->count(),
+                'luxury' => Car::where('is_published', true)
+                    ->where('price', '>', 50000)->count(),
+            ],
+            
+            // Top des villes (si vous avez une colonne city)
+            'top_cities' => Car::selectRaw('city, COUNT(*) as count')
+                ->where('is_published', true)
+                ->whereNotNull('city')
+                ->groupBy('city')
+                ->orderBy('count', 'desc')
+                ->take(8)
+                ->get(),
+            
+            // Analyse des années de voitures
+            'car_years' => Car::selectRaw('year, COUNT(*) as count, AVG(price) as avg_price')
+                ->where('is_published', true)
+                ->whereNotNull('year')
+                ->groupBy('year')
+                ->orderBy('year', 'desc')
+                ->take(10)
+                ->get(),
+        ];
+
+        return view('admin.statistics', compact('generalStats', 'chartData', 'advancedStats'));
     }
 
     /**

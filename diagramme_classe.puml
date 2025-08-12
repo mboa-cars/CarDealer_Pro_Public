@@ -1,0 +1,114 @@
+@startuml Diagramme de Classe - Application Laravel
+
+!define RECTANGLE class
+
+package "App\\Models" {
+    
+    class User {
+        +id: bigint
+        +name: string
+        +email: string
+        +phone: string
+        +email_verified_at: timestamp
+        +password: string
+        +remember_token: string
+        +created_at: timestamp
+        +updated_at: timestamp
+        --
+        +favorites(): HasMany
+        +carsFavorited(): BelongsToMany
+        +cars(): HasMany
+    }
+    
+    class Car {
+        +id: bigint
+        +brand: string
+        +model: string
+        +year: integer
+        +price: decimal(10,2)
+        +description: text
+        +image: string
+        +type: string
+        +city: string
+        +mileage: integer
+        +state: string
+        +vin: string
+        +fuel_type: string
+        +address: string
+        +phone: string
+        +user_id: bigint
+        +features: json
+        +video_url: string
+        +is_published: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
+        --
+        +images(): HasMany
+        +favorites(): HasMany
+        +favoritedByUsers(): BelongsToMany
+        +user(): BelongsTo
+        +getMainImageAttribute(): string
+        +getFormattedPriceAttribute(): string
+        +getFormattedMileageAttribute(): string
+        +scopePublished(query): QueryBuilder
+        +scopeByUser(query, userId): QueryBuilder
+    }
+    
+    class CarImage {
+        +id: bigint
+        +car_id: bigint
+        +image: string
+        +position: integer
+        +created_at: timestamp
+        +updated_at: timestamp
+        --
+        +car(): BelongsTo
+        +getImageUrlAttribute(): string
+    }
+    
+    class Favorite {
+        +id: bigint
+        +user_id: bigint
+        +car_id: bigint
+        +created_at: timestamp
+        +updated_at: timestamp
+        --
+        +user(): BelongsTo
+        +car(): BelongsTo
+    }
+}
+
+' Relations
+User ||--o{ Car : "possède"
+User ||--o{ Favorite : "a"
+Car ||--o{ CarImage : "contient"
+Car ||--o{ Favorite : "est favori de"
+User }o--|| Favorite : "favorise"
+Car }o--|| Favorite : "est favori"
+
+' Relations many-to-many
+User }o--o{ Car : "favorise"
+
+note right of User
+  Modèle d'authentification Laravel
+  avec gestion des favoris
+end note
+
+note right of Car
+  Modèle principal pour les
+  véhicules avec gestion des
+  images multiples
+end note
+
+note right of CarImage
+  Gestion des images multiples
+  par véhicule avec positionnement
+end note
+
+note right of Favorite
+  Table pivot pour la relation
+  many-to-many User-Car
+  avec contrainte unique
+end note
+
+@enduml 

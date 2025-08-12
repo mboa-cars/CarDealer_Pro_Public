@@ -31,6 +31,12 @@ COPY . /var/www
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www
 
+# Configuration PHP-FPM pour éviter les timeouts
+RUN echo "request_terminate_timeout = 300s" >> /usr/local/etc/php-fpm.d/www.conf \
+    && echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 # Expose le port FPM
 EXPOSE 9000
 

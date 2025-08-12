@@ -1,0 +1,105 @@
+@startuml CarDealer_Pro_Architecture
+
+!theme plain
+skinparam backgroundColor white
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+title CarDealer Pro - Architecture Système
+
+package "Frontend" {
+  [Vue.js Components] as Vue
+  [Blade Templates] as Blade
+  [CSS/SCSS] as CSS
+  [JavaScript] as JS
+}
+
+package "Backend (Laravel)" {
+  package "Controllers" {
+    [CarController] as CC
+    [ProfileController] as PC
+    [HomeController] as HC
+    [Auth Controllers] as AC
+  }
+  
+  package "Models" {
+    [User Model] as UM
+    [Car Model] as CM
+    [CarImage Model] as CIM
+    [Favorite Model] as FM
+  }
+  
+  package "Middleware" {
+    [Authenticate] as Auth
+    [SecurityHeaders] as SH
+  }
+  
+  package "Services" {
+    [ImageService] as IS
+    [ValidationService] as VS
+  }
+}
+
+package "Base de Données" {
+  database "MySQL" {
+    [users] as UsersDB
+    [cars] as CarsDB
+    [car_images] as ImagesDB
+    [favorites] as FavoritesDB
+  }
+}
+
+package "Stockage" {
+  folder "Storage" {
+    [Public Images] as PublicImg
+    [Uploaded Images] as UploadImg
+  }
+}
+
+package "Infrastructure" {
+  [Nginx Web Server] as Nginx
+  [PHP-FPM] as PHP
+  [Docker Container] as Docker
+}
+
+' Relations Frontend
+Vue --> Blade
+Blade --> CSS
+Blade --> JS
+
+' Relations Backend
+Vue --> CC
+Blade --> CC
+CC --> CM
+CC --> CIM
+CC --> FM
+PC --> UM
+HC --> CM
+AC --> UM
+
+' Relations Base de Données
+CM --> CarsDB
+CIM --> ImagesDB
+UM --> UsersDB
+FM --> FavoritesDB
+
+' Relations Stockage
+CIM --> UploadImg
+CM --> PublicImg
+
+' Relations Infrastructure
+Nginx --> PHP
+PHP --> CC
+PHP --> PC
+PHP --> HC
+Docker --> Nginx
+Docker --> PHP
+Docker --> MySQL
+
+' Flux de données
+note right of Vue : "Interface utilisateur\nReact/Vue.js"
+note right of CC : "Gestion des voitures\nCRUD complet"
+note right of CM : "Modèle principal\nRelations Eloquent"
+note right of MySQL : "Données persistantes\nRelations normalisées"
+
+@enduml 

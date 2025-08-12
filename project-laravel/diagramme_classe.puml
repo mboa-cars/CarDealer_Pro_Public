@@ -1,0 +1,154 @@
+@startuml CarDealer_Pro_Class_Diagram
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam classFontName Arial
+skinparam backgroundColor white
+skinparam classBackgroundColor #f8f9fa
+skinparam classBorderColor #6c757d
+
+title CarDealer Pro - Diagramme de Classe
+
+' ===== CLASSE USER =====
+class User {
+  +id: int
+  +name: string
+  +email: string
+  +phone: string
+  +password: string
+  +email_verified_at: datetime
+  +remember_token: string
+  +created_at: datetime
+  +updated_at: datetime
+  
+  +favorites(): HasMany
+  +carsFavorited(): BelongsToMany
+  +cars(): HasMany
+}
+
+' ===== CLASSE CAR =====
+class Car {
+  +id: int
+  +brand: string
+  +model: string
+  +year: int
+  +price: decimal
+  +description: text
+  +image: string
+  +type: string
+  +city: string
+  +mileage: int
+  +state: string
+  +vin: string
+  +fuel_type: string
+  +address: string
+  +phone: string
+  +user_id: int
+  +features: array
+  +video_url: string
+  +is_published: boolean
+  +created_at: datetime
+  +updated_at: datetime
+  
+  +images(): HasMany
+  +favorites(): HasMany
+  +favoritedByUsers(): BelongsToMany
+  +user(): BelongsTo
+  +getMainImageAttribute(): string
+  +getFormattedPriceAttribute(): string
+  +getFormattedMileageAttribute(): string
+  +scopePublished(): QueryBuilder
+  +scopeByUser(): QueryBuilder
+}
+
+' ===== CLASSE CAR_IMAGE =====
+class CarImage {
+  +id: int
+  +car_id: int
+  +image: string
+  +position: int
+  +created_at: datetime
+  +updated_at: datetime
+  
+  +car(): BelongsTo
+  +getImageUrlAttribute(): string
+}
+
+' ===== CLASSE FAVORITE =====
+class Favorite {
+  +id: int
+  +user_id: int
+  +car_id: int
+  +created_at: datetime
+  +updated_at: datetime
+  
+  +user(): BelongsTo
+  +car(): BelongsTo
+}
+
+' ===== RELATIONS =====
+User ||--o{ Car : "possède"
+User ||--o{ Favorite : "a"
+Car ||--o{ CarImage : "contient"
+Car ||--o{ Favorite : "est favori de"
+User }o--o{ Car : "favorise" (via Favorite)
+
+' ===== CONTROLLERS =====
+package "Controllers" {
+  class CarController {
+    +index(): View
+    +create(): View
+    +store(): RedirectResponse
+    +show(): View
+    +edit(): View
+    +update(): RedirectResponse
+    +destroy(): RedirectResponse
+    +myCars(): View
+    +manageImages(): View
+    +updateImagePositions(): JsonResponse
+    +deleteImage(): JsonResponse
+    +addImages(): JsonResponse
+    +addToFavorites(): JsonResponse
+    +removeFromFavorites(): JsonResponse
+    +favorites(): View
+    +carCard(): View
+  }
+  
+  class ProfileController {
+    +edit(): View
+    +update(): RedirectResponse
+    +destroy(): RedirectResponse
+  }
+  
+  class HomeController {
+    +index(): View
+  }
+}
+
+' ===== RELATIONS CONTROLLERS =====
+CarController --> Car : "gère"
+CarController --> CarImage : "gère"
+CarController --> Favorite : "gère"
+ProfileController --> User : "gère"
+HomeController --> Car : "affiche"
+
+' ===== MIDDLEWARE =====
+package "Middleware" {
+  class Authenticate {
+    +redirectTo(): string
+  }
+  
+  class SecurityHeaders {
+    +handle(): Response
+  }
+}
+
+' ===== NOTES =====
+note top of User : "Utilisateur authentifié\nGère les favoris et ses voitures"
+note top of Car : "Voiture mise en vente\nAvec images multiples\nEt système de favoris"
+note top of CarImage : "Images des voitures\nAvec positionnement"
+note top of Favorite : "Table pivot pour\nles favoris utilisateur"
+note top of CarController : "Gestion complète\ndes voitures et favoris"
+
+@enduml 

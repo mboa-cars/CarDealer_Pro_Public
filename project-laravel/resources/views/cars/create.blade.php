@@ -15,6 +15,19 @@
                 </a>
             </div>
 
+            @php($limit = auth()->user()->car_limit)
+            @if(!auth()->user()->isAdmin() && !auth()->user()->canPublishMoreCars())
+            <div class="alert alert-warning border-0 shadow-sm" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); color: #212529; border-radius: 12px;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle me-3" style="font-size: 1.2rem;"></i>
+                    <div>
+                        <strong>Limite de plan atteinte.</strong> Votre plan actuel vous permet de publier jusqu'à {{ $limit }} voitures.
+                        <a href="{{ route('plans.index') }}" class="text-dark fw-bold text-decoration-underline">Mettre à niveau vers Premium</a> pour des publications illimitées.
+                    </div>
+                </div>
+            </div>
+            @endif
+
             @if($errors->any())
             <div class="alert alert-danger border-0 shadow-sm" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; border-radius: 12px;">
                 <div class="d-flex align-items-center">
@@ -213,7 +226,7 @@
                                     <div id="preview-images" class="d-flex flex-wrap gap-2 mt-3"></div>
                                 </div>
 
-                                <button type="submit" class="btn btn-lg w-100" style="background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); color: white; border: none; border-radius: 12px; padding: 15px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.3);">
+                <button type="submit" class="btn btn-lg w-100" {{ (auth()->user()->isAdmin() || auth()->user()->canPublishMoreCars()) ? '' : 'disabled' }} style="background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); color: white; border: none; border-radius: 12px; padding: 15px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.3);">
                                     <i class="fas fa-save me-2"></i>Add Car
                                 </button>
                             </div>

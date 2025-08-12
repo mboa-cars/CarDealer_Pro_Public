@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Car;
 use App\Models\CarImage;
 use App\Models\Favorite;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -110,6 +111,10 @@ class CarController extends Controller
      */
     public function create()
     {
+        // Limitation selon le plan
+        if (!Auth::user()->canPublishMoreCars()) {
+            return redirect()->route('cars.my-cars')->with('error', "Vous avez atteint la limite de publications pour votre plan. Passez au plan Premium pour publier davantage.");
+        }
         $carTypes = ['SUV', 'Coupe', 'Minivan', 'Crossover', 'Pickup Truck', 'Hatchback', 'Sedan', 'Jeep', 'Sports Car'];
         $fuelTypes = ['Gasoline', 'Diesel', 'Electric', 'Hybrid'];
         $features = [
@@ -126,6 +131,10 @@ class CarController extends Controller
      */
     public function store(Request $request)
     {
+        // Vérifier la limite de publication avant de valider et créer
+        if (!Auth::user()->canPublishMoreCars()) {
+            return back()->withErrors(['error' => "Limite atteinte pour votre plan. Passez au plan Premium pour publier davantage."])->withInput();
+        }
         \Log::info('Store method called', [
             'user_id' => Auth::id(),
             'request_data' => $request->all()
@@ -199,7 +208,13 @@ class CarController extends Controller
         $user = Auth::user();
         $isFavorited = $user ? $user->carsFavorited()->where('car_id', $id)->exists() : false;
         
-        return view('cars.show', compact('car', 'isFavorited'));
+        // Vérifier si l'utilisateur connecté suit le vendeur
+        $isFollowing = $user && $user->id !== $car->user_id ? $user->isFollowing($car->user_id) : false;
+        
+        // Compter les abonnés du vendeur
+        $followersCount = $car->user->followers_count;
+        
+        return view('cars.show', compact('car', 'isFavorited', 'isFollowing', 'followersCount'));
     }
 
     /**

@@ -1,4 +1,4 @@
-<nav x-data="{ open: false, dropdownOpen: false }" class="bg-white border-b border-gray-100 shadow-sm" style="position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.95);">
+<nav x-data="{ navOpen: false, dropdownOpen: false }" class="bg-white border-b border-gray-100 shadow-sm" style="position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.95);">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -30,6 +30,9 @@
             <!-- Right Side Buttons -->
             <div class="flex items-center space-x-4">
                 @auth
+                    <!-- Bookmarks Dropdown -->
+                    <x-bookmarks-dropdown />
+                    
                     <!-- Add New Car Button -->
                     <a href="{{ route('cars.create') }}" class="btn btn-modern-nav add-car-btn" style="background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); color: white; border: none; border-radius: 12px; padding: 10px 20px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.3); display: flex; align-items: center; gap: 8px; position: relative; overflow: hidden;">
                         <i class="fas fa-plus btn-icon"></i>
@@ -37,17 +40,19 @@
                         <div class="btn-particles"></div>
                     </a>
 
+
+
                     <!-- Welcome Dropdown -->
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.away="open = false" class="btn btn-modern-nav welcome-btn" style="background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); color: white; border: none; border-radius: 12px; padding: 10px 20px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.3); display: flex; align-items: center; gap: 8px; position: relative; overflow: hidden;">
+                    <div class="relative" x-data="{ userDropdownOpen: false }">
+                        <button @click="userDropdownOpen = !userDropdownOpen" @click.away="userDropdownOpen = false" class="btn btn-modern-nav welcome-btn" style="background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); color: white; border: none; border-radius: 12px; padding: 10px 20px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(242, 101, 34, 0.3); display: flex; align-items: center; gap: 8px; position: relative; overflow: hidden;">
                             <i class="fas fa-user btn-icon"></i>
                             <span>Welcome, {{ Auth::user()->name }}</span>
-                            <i class="fas fa-chevron-down dropdown-arrow" style="font-size: 0.8rem; transition: transform 0.3s ease;" :class="{ 'rotate-180': open }"></i>
+                            <i class="fas fa-chevron-down dropdown-arrow" style="font-size: 0.8rem; transition: transform 0.3s ease;" :class="{ 'rotate-180': userDropdownOpen }"></i>
                             <div class="btn-particles"></div>
                         </button>
 
                         <!-- Dropdown Menu -->
-                        <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="transform opacity-0 scale-95 translate-y-2" x-transition:enter-end="transform opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="transform opacity-100 scale-100 translate-y-0" x-transition:leave-end="transform opacity-0 scale-95 translate-y-2" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 dropdown-menu" style="min-width: 200px; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.95);">
+                        <div x-show="userDropdownOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="transform opacity-0 scale-95 translate-y-2" x-transition:enter-end="transform opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="transform opacity-100 scale-100 translate-y-0" x-transition:leave-end="transform opacity-0 scale-95 translate-y-2" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 dropdown-menu" style="min-width: 200px; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.95);">
                             <div class="px-4 py-3 border-b border-gray-100 user-info">
                                 <p class="text-sm font-semibold text-gray-900">{{ Auth::user()->name }}</p>
                                 <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
@@ -67,6 +72,34 @@
                                 <i class="fas fa-heart me-3" style="color: #F26522;"></i>
                                 <span>My Favorites</span>
                             </a>
+                            
+                            <a href="{{ route('bookmarks.index') }}" class="dropdown-item">
+                                <i class="fas fa-bookmark me-3" style="color: #F26522;"></i>
+                                <span>Mes Bookmarks</span>
+                            </a>
+                            
+                            @if(auth()->user()->isAdmin())
+                            <!-- ADMIN MENU START -->
+                            <a href="{{ route('admin.dashboard') }}" class="dropdown-item admin-link" style="background-color: #f8f9fa; border-left: 3px solid #F26522;">
+                                <i class="fas fa-tachometer-alt me-3" style="color: #F26522;"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="{{ route('admin.users') }}" class="dropdown-item admin-link" style="background-color: #f8f9fa; border-left: 3px solid #F26522;">
+                                <i class="fas fa-users me-3" style="color: #F26522;"></i>
+                                <span>Utilisateurs</span>
+                            </a>
+                            <a href="{{ route('admin.cars') }}" class="dropdown-item admin-link" style="background-color: #f8f9fa; border-left: 3px solid #F26522;">
+                                <i class="fas fa-car me-3" style="color: #F26522;"></i>
+                                <span>Voitures</span>
+                            </a>
+                            <a href="{{ route('admin.statistics') }}" class="dropdown-item admin-link" style="background-color: #f8f9fa; border-left: 3px solid #F26522;">
+                                <i class="fas fa-chart-bar me-3" style="color: #F26522;"></i>
+                                <span>Statistiques</span>
+                            </a>
+                            <!-- ADMIN MENU END -->
+                            @else
+                            <!-- NOT ADMIN -->
+                            @endif
                             
                             <div class="border-t border-gray-100 my-2"></div>
                             
@@ -95,10 +128,10 @@
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="hamburger-btn inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                <button @click="navOpen = ! navOpen" class="hamburger-btn inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{'hidden': navOpen, 'inline-flex': ! navOpen }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! navOpen, 'inline-flex': navOpen }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -106,7 +139,7 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden responsive-menu">
+    <div :class="{'block': navOpen, 'hidden': ! navOpen}" class="hidden sm:hidden responsive-menu">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('cars.index')" :active="request()->routeIs('cars.*')">
                 {{ __('Voitures') }}
@@ -130,6 +163,25 @@
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
+
+                    @if(auth()->user()->isAdmin())
+                    <div class="border-t border-gray-200 my-2"></div>
+                    <div class="px-4 py-2">
+                        <div class="text-xs font-medium text-gray-500 uppercase tracking-wider">Administration</div>
+                    </div>
+                    <x-responsive-nav-link :href="route('admin.dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.users')">
+                        {{ __('Utilisateurs') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.cars')">
+                        {{ __('Voitures') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.statistics')">
+                        {{ __('Statistiques') }}
+                    </x-responsive-nav-link>
+                    @endif
 
                     <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">
@@ -378,6 +430,35 @@ a:hover .logo-text {
 .logout-btn:hover {
     background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%) !important;
     color: #d32f2f !important;
+}
+
+/* Admin Links Styles */
+.admin-link {
+    background-color: #f8f9fa !important;
+    border-left: 3px solid #F26522 !important;
+    margin: 4px 8px !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    color: #333 !important;
+    text-decoration: none !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    border-radius: 8px !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.admin-link:hover {
+    background: linear-gradient(135deg, #F26522 0%, #ea6500 100%) !important;
+    color: white !important;
+    transform: translateX(8px) !important;
+    box-shadow: 0 4px 15px rgba(242, 101, 34, 0.3) !important;
+}
+
+.admin-link:hover i {
+    color: white !important;
 }
 
 /* Navigation Links */

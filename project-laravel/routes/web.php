@@ -6,6 +6,9 @@ use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\PlanController;
+use App\Http\Controllers\SellerReviewController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -51,6 +54,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/bookmarks/api', [BookmarkController::class, 'apiIndex'])->name('bookmarks.api');
     Route::get('/bookmarks/search', [BookmarkController::class, 'search'])->name('bookmarks.search');
     Route::post('/bookmarks/remove', [BookmarkController::class, 'removeByUrl'])->name('bookmarks.remove-by-url');
+    
+    // Routes pour les abonnements
+    Route::post('/subscribe/{seller}', [SubscriptionController::class, 'toggle'])->name('subscriptions.toggle');
+    Route::get('/my-subscriptions', [SubscriptionController::class, 'mySubscriptions'])->name('subscriptions.index');
+    Route::get('/my-followers', [SubscriptionController::class, 'myFollowers'])->name('subscriptions.followers');
+
+    // Plans (les contrôleurs bloquent déjà l'accès admin)
+    Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
+    Route::post('/plans/{plan}', [PlanController::class, 'choose'])->name('plans.choose');
+    Route::get('/plans/checkout/success/{plan}', [PlanController::class, 'checkoutSuccess'])->name('plans.checkout.success');
+    
+    // Routes pour les avis vendeurs (protégées par auth)
+    Route::get('/cars/{car}/review', [SellerReviewController::class, 'create'])->name('reviews.create')->middleware('auth');
+    Route::post('/cars/{car}/review', [SellerReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
 });
 
 // Routes pour les favoris (accessibles à tous)
@@ -78,6 +95,10 @@ Route::resource('cars', CarController::class)->except(['destroy', 'create', 'sto
 Route::delete('/cars/{car}', [CarController::class, 'destroy'])->middleware('auth')->name('cars.destroy');
 Route::get('/car-card/{car}', [App\Http\Controllers\CarController::class, 'carCard'])->name('car.card');
 
+// Routes publiques pour les avis
+Route::get('/seller/{seller}/reviews', [SellerReviewController::class, 'sellerReviews'])->name('reviews.seller');
+Route::get('/cars/{car}/reviews', [SellerReviewController::class, 'carReviews'])->name('reviews.car');
+
 // Route::view('/profile', 'profile')->name('profile'); // Supprimé - conflit avec ProfileController
 
 // Routes d'administration
@@ -90,7 +111,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/cars/{car}/toggle-publish', [AdminController::class, 'togglePublish'])->name('cars.toggle-publish');
     Route::delete('/cars/{car}', [AdminController::class, 'deleteCar'])->name('cars.delete');
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
+    Route::get('/subscriptions', [AdminController::class, 'subscriptions'])->name('subscriptions');
     Route::get('/bookmarks', [AdminController::class, 'bookmarks'])->name('bookmarks');
+    Route::get('/plans', [AdminController::class, 'userPlans'])->name('plans');
 });
 
 require __DIR__.'/auth.php';
