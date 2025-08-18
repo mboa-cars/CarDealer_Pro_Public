@@ -16,7 +16,7 @@
                         <i class="fas fa-plus me-2"></i>Add new Car
                     </a>
                     @unless($canPublish || auth()->user()->isAdmin())
-                        <a href="{{ route('plans.index') }}" class="btn-upgrade">
+                        <a href="{{ route('plans.index') }}" class="btn-modern">
                             <i class="fas fa-crown me-2"></i>Mettre à niveau (Premium)
                         </a>
                     @endunless
