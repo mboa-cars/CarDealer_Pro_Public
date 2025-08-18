@@ -10,12 +10,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SellerReviewController;
-<<<<<<< Updated upstream
-=======
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
->>>>>>> Stashed changes
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 

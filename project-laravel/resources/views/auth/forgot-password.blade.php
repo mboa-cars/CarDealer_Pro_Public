@@ -269,8 +269,6 @@ a:hover h5 {
 
 @push('scripts')
 <script>
-<<<<<<< Updated upstream
-=======
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('forgotPasswordForm');
     const sendNewBtn = document.getElementById('sendNewPasswordBtn');
@@ -344,7 +342,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @push('scripts')
 <script>
->>>>>>> Stashed changes
 // Form Validation Enhancement
 document.querySelectorAll('.modern-input').forEach(input => {
     input.addEventListener('blur', function() {
