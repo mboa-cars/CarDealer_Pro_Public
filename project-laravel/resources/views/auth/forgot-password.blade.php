@@ -15,7 +15,7 @@
                                     <div class="logo-icon me-2" style="width: 35px; height: 35px; background: linear-gradient(135deg, #F26522 0%, #ea6500 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; font-weight: bold; transition: all 0.3s ease;">
                                         <i class="fas fa-sun"></i>
                                     </div>
-                                    <h5 class="mb-0 fw-bold" style="color: #333; font-size: 1.3rem;">Logoipsum</h5>
+                                    <h5 class="mb-0 fw-bold" style="color: #333; font-size: 1.3rem;">Mboa-cars</h5>
                                 </a>
                             </div>
                             <h3 class="fw-bold mb-0" style="color: #333; font-size: 1.8rem;">Forgot Password</h3>

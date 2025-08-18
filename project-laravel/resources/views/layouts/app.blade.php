@@ -27,7 +27,7 @@
         <div class="container">
             <a class="navbar-brand logo d-flex align-items-center" href="/" style="text-decoration: none; color: #333;">
                 <span class="logo-icon" style="font-size:2rem;margin-right:8px; color: #F26522; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);">&#9728;</span> 
-                <span class="logo-text" style="font-weight: 600; font-size: 1.5rem; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);">Logoipsum</span>
+                <span class="logo-text" style="font-weight: 600; font-size: 1.5rem; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);">Mboa-cars</span>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -110,7 +110,7 @@
                     <div class="footer-brand-section">
                         <div class="footer-logo d-flex align-items-center mb-3">
                             <span class="footer-logo-icon" style="font-size: 2.5rem; margin-right: 12px; color: #F26522; animation: footerLogoFloat 6s ease-in-out infinite;">&#9728;</span>
-                            <span class="footer-logo-text" style="font-weight: 700; font-size: 1.8rem; color: white;">Logoipsum</span>
+                            <span class="footer-logo-text" style="font-weight: 700; font-size: 1.8rem; color: white;">Mboa-cars</span>
                         </div>
                         <p class="footer-description" style="color: #b0b0b0; line-height: 1.6; margin-bottom: 20px;">
                             Votre plateforme de confiance pour acheter, vendre et découvrir des véhicules d'exception. 
@@ -228,7 +228,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <p class="footer-copyright" style="color: #b0b0b0; margin: 0; font-size: 0.9rem;">
-                            © 2024 Logoipsum. Tous droits réservés. Conçu avec 
+                            © 2025 Mboa-cars. Tous droits réservés. Conçu avec 
                             <i class="fas fa-heart" style="color: #F26522; margin: 0 4px;"></i> 
                             pour les passionnés d'automobiles.
                         </p>
