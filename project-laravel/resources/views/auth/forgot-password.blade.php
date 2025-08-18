@@ -71,6 +71,31 @@
                                 </button>
                             </div>
 
+                            <!-- Divider -->
+                            <div class="d-flex align-items-center my-3">
+                                <hr class="flex-grow-1"/>
+                                <span class="mx-2 text-muted" style="font-size: .9rem;">or reset via SMS</span>
+                                <hr class="flex-grow-1"/>
+                            </div>
+
+                            <!-- OTP via SMS -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="reset-phone" style="color:#555; font-size:.9rem;">
+                                    <i class="fas fa-phone me-1" style="color:#F26522;"></i>Phone Number
+                                </label>
+                                <input type="text" id="reset-phone" class="form-control modern-input" placeholder="e.g. +2376xxxxxxx" />
+                            </div>
+                            <div class="mb-3 d-flex gap-2">
+                                <button type="button" id="send-reset-otp-btn" class="btn btn-outline-secondary" style="border-radius:10px;">
+                                    <i class="fas fa-sms me-1"></i>Send Code
+                                </button>
+                                <input type="text" id="reset-otp-code" class="form-control modern-input" placeholder="6-digit code" inputmode="numeric" pattern="[0-9]*" style="max-width: 180px;"/>
+                                <button type="button" id="reset-with-otp-btn" class="btn btn-modern" style="border-radius:10px;">
+                                    <i class="fas fa-unlock-alt me-1"></i>Reset via OTP
+                                </button>
+                            </div>
+                            <div id="reset-otp-feedback" class="mb-2" style="min-height:22px; font-size:.9rem; color:#666;"></div>
+
                             <!-- Back to Login -->
                             <div class="text-center">
                                 <span class="text-muted" style="font-size: 0.85rem;">Remember your password? - </span>
@@ -244,6 +269,82 @@ a:hover h5 {
 
 @push('scripts')
 <script>
+<<<<<<< Updated upstream
+=======
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('forgotPasswordForm');
+    const sendNewBtn = document.getElementById('sendNewPasswordBtn');
+    if (sendNewBtn) {
+        sendNewBtn.addEventListener('click', function () {
+            if (!form) return;
+            const originalAction = form.getAttribute('action');
+            form.setAttribute('action', "{{ route('password.send-new') }}");
+            form.submit();
+            // restore action to keep default behavior for next time
+            form.setAttribute('action', originalAction);
+        });
+    }
+});
+</script>
+@endpush
+
+@push('scripts')
+<script>
+(function(){
+    const form = document.getElementById('forgotPasswordForm');
+    const phoneInput = document.getElementById('reset-phone');
+    const sendBtn = document.getElementById('send-reset-otp-btn');
+    const codeInput = document.getElementById('reset-otp-code');
+    const resetBtn = document.getElementById('reset-with-otp-btn');
+    const feedback = document.getElementById('reset-otp-feedback');
+
+    if (!form) return;
+    const csrf = form.querySelector('input[name="_token"]')?.value || '';
+
+    function isE164(v){
+        return /^\+[1-9]\d{7,14}$/.test(v); // E.164 strict
+    }
+    async function postJson(url, data){
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': csrf, 'Accept':'application/json' },
+            body: JSON.stringify(data)
+        });
+        const json = await res.json().catch(()=>({}));
+        if (!res.ok) throw new Error(json.message || 'Request failed');
+        return json;
+    }
+    if (sendBtn){
+        sendBtn.addEventListener('click', async ()=>{
+            feedback.textContent='';
+            const phone = phoneInput.value.trim();
+            if (!isE164(phone)) { feedback.style.color = '#c00'; feedback.textContent = 'Veuillez saisir un numéro au format E.164 (ex: +237657XXXXXX).'; return; }
+            sendBtn.disabled = true; sendBtn.classList.add('btn-loading');
+            try { await postJson('/auth/otp/reset/send', { phone }); feedback.style.color = '#090'; feedback.textContent = 'Code envoyé par SMS. Il expire dans 5 minutes.'; }
+            catch(e){ feedback.style.color = '#c00'; feedback.textContent = e.message; }
+            finally { sendBtn.disabled = false; sendBtn.classList.remove('btn-loading'); }
+        });
+    }
+    if (resetBtn){
+        resetBtn.addEventListener('click', async ()=>{
+            feedback.textContent='';
+            const phone = phoneInput.value.trim();
+            const code = codeInput.value.trim();
+            if (!isE164(phone)) { feedback.style.color = '#c00'; feedback.textContent = 'Veuillez saisir un numéro au format E.164 (ex: +237657XXXXXX).'; return; }
+            if (!/^\d{6}$/.test(code)) { feedback.style.color = '#c00'; feedback.textContent = 'Entrez un code à 6 chiffres.'; return; }
+            resetBtn.disabled = true; resetBtn.classList.add('btn-loading');
+            try { await postJson('/auth/otp/reset/confirm', { phone, code }); feedback.style.color = '#090'; feedback.textContent = 'Mot de passe temporaire envoyé par SMS. Connectez-vous puis changez-le.'; }
+            catch(e){ feedback.style.color = '#c00'; feedback.textContent = e.message; }
+            finally { resetBtn.disabled = false; resetBtn.classList.remove('btn-loading'); }
+        });
+    }
+})();
+</script>
+@endpush
+
+@push('scripts')
+<script>
+>>>>>>> Stashed changes
 // Form Validation Enhancement
 document.querySelectorAll('.modern-input').forEach(input => {
     input.addEventListener('blur', function() {

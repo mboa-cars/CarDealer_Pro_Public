@@ -18,10 +18,10 @@ return new class extends Migration
             $table->boolean('is_active')->default(true); // Statut de l'abonnement
             $table->timestamp('subscribed_at')->useCurrent(); // Date d'abonnement
             $table->timestamps();
-            
+
             // Index unique pour éviter les doublons
             $table->unique(['subscriber_id', 'seller_id']);
-            
+
             // Index pour les requêtes
             $table->index(['subscriber_id', 'is_active']);
             $table->index(['seller_id', 'is_active']);

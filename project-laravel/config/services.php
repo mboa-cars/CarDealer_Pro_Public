@@ -41,4 +41,17 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    // Twilio removed
+    // Generic SMS provider selector
+    'sms' => [
+        'provider' => env('SMS_PROVIDER', 'sinch'), // sinch
+    ],
+
+    // Sinch (XMS)
+    'sinch' => [
+        'service_plan_id' => env('SINCH_SERVICE_PLAN_ID'),
+        'api_token' => env('SINCH_API_TOKEN'),
+        'from' => env('SINCH_FROM'),
+    ],
+
 ];

@@ -18,26 +18,26 @@ class SellerReviewController extends Controller
     public function create($carId)
     {
         // Vérifier que l'utilisateur est connecté
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')->with('error', 'Vous devez être connecté pour noter un vendeur.');
         }
 
         $car = Car::findOrFail($carId);
-        
+
         // Vérifier que l'utilisateur connecté n'est pas le vendeur
         if (Auth::id() === $car->user_id) {
             return redirect()->back()->with('error', 'Vous ne pouvez pas noter votre propre annonce.');
         }
-        
+
         // Vérifier que l'utilisateur n'a pas déjà noté cette voiture
         $existingReview = SellerReview::where('reviewer_id', Auth::id())
             ->where('car_id', $carId)
             ->first();
-            
+
         if ($existingReview) {
             return redirect()->back()->with('error', 'Vous avez déjà noté ce vendeur pour cette voiture.');
         }
-        
+
         return view('reviews.create', compact('car'));
     }
 
@@ -47,7 +47,7 @@ class SellerReviewController extends Controller
     public function store(Request $request, $carId)
     {
         // Vérifier que l'utilisateur est connecté
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')->with('error', 'Vous devez être connecté pour noter un vendeur.');
         }
 
@@ -57,17 +57,17 @@ class SellerReviewController extends Controller
         ]);
 
         $car = Car::findOrFail($carId);
-        
+
         // Vérifier que l'utilisateur connecté n'est pas le vendeur
         if (Auth::id() === $car->user_id) {
             return redirect()->back()->with('error', 'Vous ne pouvez pas noter votre propre annonce.');
         }
-        
+
         // Vérifier que l'utilisateur n'a pas déjà noté cette voiture
         $existingReview = SellerReview::where('reviewer_id', Auth::id())
             ->where('car_id', $carId)
             ->first();
-            
+
         if ($existingReview) {
             return redirect()->back()->with('error', 'Vous avez déjà noté ce vendeur pour cette voiture.');
         }

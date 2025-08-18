@@ -49,8 +49,9 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+        // Connecter automatiquement l'utilisateur et rediriger vers l'accueil
+        Auth::login($user);
 
-        // Rediriger vers la page de login avec un message de succès
-        return redirect()->route('login')->with('status', 'Account created successfully! Please login with your credentials.');
+        return redirect('/');
     }
 }

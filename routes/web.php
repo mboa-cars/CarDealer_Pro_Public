@@ -6,6 +6,7 @@ use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\Auth\OtpController;
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -58,3 +59,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
 require __DIR__.'/auth.php';
+
+// (Login OTP routes removed)
+// OTP for password reset
+Route::post('/auth/otp/reset/send', [OtpController::class, 'sendResetOtp'])->name('auth.otp.reset.send');
+Route::post('/auth/otp/reset/confirm', [OtpController::class, 'resetPasswordWithOtp'])->name('auth.otp.reset.confirm');

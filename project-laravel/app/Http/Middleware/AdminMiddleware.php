@@ -17,15 +17,15 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         // Vérifier si l'utilisateur est connecté
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')->with('error', 'Vous devez être connecté pour accéder à cette page.');
         }
 
         // Vérifier si l'utilisateur est administrateur
-        if (!Auth::user()->isAdmin()) {
+        if (! Auth::user()->isAdmin()) {
             return redirect()->route('home')->with('error', 'Accès refusé. Vous devez être administrateur.');
         }
 
         return $next($request);
     }
-} 
+}

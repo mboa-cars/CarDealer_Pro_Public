@@ -31,9 +31,9 @@ return new class extends Migration
         Schema::table('cars', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropColumn([
-                'vin', 'fuel_type', 'address', 'phone', 'user_id', 
-                'features', 'video_url', 'is_published'
+                'vin', 'fuel_type', 'address', 'phone', 'user_id',
+                'features', 'video_url', 'is_published',
             ]);
         });
     }
-}; 
+};

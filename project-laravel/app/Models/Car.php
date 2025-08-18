@@ -11,14 +11,14 @@ class Car extends Model
 
     protected $fillable = [
         'brand', 'model', 'year', 'price', 'description', 'image', 'type', 'city', 'mileage', 'state',
-        'vin', 'fuel_type', 'address', 'phone', 'user_id', 'features', 'video_url', 'is_published'
+        'vin', 'fuel_type', 'address', 'phone', 'user_id', 'features', 'video_url', 'is_published',
     ];
 
     protected $casts = [
         'features' => 'array',
         'price' => 'decimal:2',
         'mileage' => 'integer',
-        'year' => 'integer'
+        'year' => 'integer',
     ];
 
     public function images()
@@ -48,29 +48,29 @@ class Car extends Model
         if ($mainImage) {
             return $mainImage->image_url;
         }
-        
+
         // Si pas d'image dans la relation, utiliser le champ image direct
         if ($this->image) {
             if (str_starts_with($this->image, 'http')) {
                 return $this->image;
             }
-            
+
             // Pour les images stockées dans storage/app/public
-            return asset('storage/' . $this->image);
+            return asset('storage/'.$this->image);
         }
-        
+
         // Image par défaut si aucune image n'est trouvée
         return asset('images/car-png-39071.png');
     }
 
     public function getFormattedPriceAttribute()
     {
-        return '$' . number_format($this->price, 0, '', ',');
+        return '$'.number_format($this->price, 0, '', ',');
     }
 
     public function getFormattedMileageAttribute()
     {
-        return number_format($this->mileage, 0, '', ',') . ' miles';
+        return number_format($this->mileage, 0, '', ',').' miles';
     }
 
     public function scopePublished($query)

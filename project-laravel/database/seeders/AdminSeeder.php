@@ -25,4 +25,4 @@ class AdminSeeder extends Seeder
         $this->command->info('Email: admin@example.com');
         $this->command->info('Mot de passe: password');
     }
-} 
+}

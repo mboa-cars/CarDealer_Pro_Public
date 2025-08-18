@@ -29,10 +29,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        
+
         // Synchroniser les favoris de session avec la base de données
         $this->syncSessionFavorites($request);
-        
+
         $request->session()->flash('status', 'You are now logged in!');
 
         return redirect()->intended('/');
@@ -44,17 +44,17 @@ class AuthenticatedSessionController extends Controller
     private function syncSessionFavorites(Request $request): void
     {
         $sessionFavorites = $request->session()->get('favorites', []);
-        
-        if (!empty($sessionFavorites)) {
+
+        if (! empty($sessionFavorites)) {
             $user = Auth::user();
-            
+
             foreach ($sessionFavorites as $carId) {
                 // Vérifier si la voiture existe et n'est pas déjà dans les favoris
-                if (!$user->favorites()->where('car_id', $carId)->exists()) {
+                if (! $user->favorites()->where('car_id', $carId)->exists()) {
                     $user->favorites()->create(['car_id' => $carId]);
                 }
             }
-            
+
             // Vider les favoris de session après synchronisation
             $request->session()->forget('favorites');
         }

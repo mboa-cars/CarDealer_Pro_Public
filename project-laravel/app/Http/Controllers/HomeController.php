@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Car;
 
 class HomeController extends Controller
@@ -19,6 +18,7 @@ class HomeController extends Controller
         $years = Car::select('year')->distinct()->orderBy('year', 'desc')->pluck('year')->filter();
         $mileages = Car::select('mileage')->distinct()->pluck('mileage')->filter();
         $prices = Car::select('price')->distinct()->orderBy('price')->pluck('price')->filter();
+
         return view('welcome', compact('latestCars', 'brands', 'models', 'types', 'states', 'cities', 'fuel_types', 'years', 'mileages', 'prices'));
     }
-} 
+}

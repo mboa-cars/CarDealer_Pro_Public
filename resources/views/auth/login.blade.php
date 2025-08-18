@@ -11,11 +11,11 @@
                 </div>
                 <!-- Session Status -->
                 <x-auth-session-status class="mb-4" :status="session('status')" />
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('login') }}" id="loginFormBasic">
                     @csrf
-                    <!-- Email -->
-                    <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required autofocus style="width: 100%; margin-bottom: 12px; padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: #fffbe6;">
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                    <!-- Email or Phone -->
+                    <input type="text" name="login" placeholder="Email or Phone" value="{{ old('login') }}" required autofocus style="width: 100%; margin-bottom: 12px; padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: #fffbe6;">
+                    <x-input-error :messages="$errors->get('login')" class="mt-2" />
                     <!-- Password -->
                     <input type="password" name="password" placeholder="Password" required style="width: 100%; margin-bottom: 12px; padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: #fffbe6;">
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
@@ -44,4 +44,5 @@
             </div>
         </div>
     </div>
+    
 </x-guest-layout>

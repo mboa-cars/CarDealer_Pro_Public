@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Car;
-use App\Models\User;
-use App\Models\Favorite;
 use App\Models\Bookmark;
+use App\Models\Car;
+use App\Models\Favorite;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -17,6 +16,7 @@ class AdminController extends Controller
     public function subscriptions()
     {
         $subscriptions = \App\Models\Subscription::with(['subscriber', 'seller'])->latest('subscribed_at')->paginate(30);
+
         return view('admin.subscriptions', compact('subscriptions'));
     }
 
@@ -35,10 +35,11 @@ class AdminController extends Controller
 
         if ($request->get('export') === 'csv') {
             $rows = collect([['ID', 'Nom', 'Email', 'Plan', 'Voitures']])
-                ->merge($standardUsers->map(fn($u) => [$u->id, $u->name, $u->email, 'standard', $u->cars_count]))
-                ->merge($premiumUsers->map(fn($u) => [$u->id, $u->name, $u->email, 'premium', $u->cars_count]));
+                ->merge($standardUsers->map(fn ($u) => [$u->id, $u->name, $u->email, 'standard', $u->cars_count]))
+                ->merge($premiumUsers->map(fn ($u) => [$u->id, $u->name, $u->email, 'premium', $u->cars_count]));
 
-            $csv = $rows->map(fn($r) => implode(',', array_map(fn($v) => '"'.str_replace('"', '""', $v).'"', $r)))->implode("\n");
+            $csv = $rows->map(fn ($r) => implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', $v).'"', $r)))->implode("\n");
+
             return response($csv, 200, [
                 'Content-Type' => 'text/csv',
                 'Content-Disposition' => 'attachment; filename="user_plans.csv"',
@@ -47,6 +48,7 @@ class AdminController extends Controller
 
         return view('admin.plans.index', compact('standardUsers', 'premiumUsers', 'stats'));
     }
+
     /**
      * Dashboard d'administration
      */
@@ -90,10 +92,10 @@ class AdminController extends Controller
         // Filtre par recherche
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -143,10 +145,10 @@ class AdminController extends Controller
     {
         if ($user->isAdmin()) {
             $user->removeAdmin();
-            $message = 'Droits d\'administrateur retirés pour ' . $user->name;
+            $message = 'Droits d\'administrateur retirés pour '.$user->name;
         } else {
             $user->makeAdmin();
-            $message = 'Droits d\'administrateur accordés à ' . $user->name;
+            $message = 'Droits d\'administrateur accordés à '.$user->name;
         }
 
         return redirect()->back()->with('success', $message);
@@ -164,7 +166,7 @@ class AdminController extends Controller
         $userName = $user->name;
         $user->delete();
 
-        return redirect()->back()->with('success', 'Utilisateur ' . $userName . ' supprimé avec succès.');
+        return redirect()->back()->with('success', 'Utilisateur '.$userName.' supprimé avec succès.');
     }
 
     /**
@@ -184,10 +186,11 @@ class AdminController extends Controller
      */
     public function togglePublish(Car $car)
     {
-        $car->update(['is_published' => !$car->is_published]);
-        
+        $car->update(['is_published' => ! $car->is_published]);
+
         $status = $car->is_published ? 'publiée' : 'dépubliée';
-        return redirect()->back()->with('success', 'Voiture ' . $car->brand . ' ' . $car->model . ' ' . $status);
+
+        return redirect()->back()->with('success', 'Voiture '.$car->brand.' '.$car->model.' '.$status);
     }
 
     /**
@@ -195,10 +198,10 @@ class AdminController extends Controller
      */
     public function deleteCar(Car $car)
     {
-        $carInfo = $car->brand . ' ' . $car->model;
+        $carInfo = $car->brand.' '.$car->model;
         $car->delete();
 
-        return redirect()->back()->with('success', 'Voiture ' . $carInfo . ' supprimée avec succès.');
+        return redirect()->back()->with('success', 'Voiture '.$carInfo.' supprimée avec succès.');
     }
 
     /**
@@ -230,7 +233,7 @@ class AdminController extends Controller
                 ->orderBy('count', 'desc')
                 ->take(8)
                 ->get(),
-            
+
             // Voitures par état
             'states' => Car::selectRaw('state, COUNT(*) as count')
                 ->where('is_published', true)
@@ -239,7 +242,7 @@ class AdminController extends Controller
                 ->orderBy('count', 'desc')
                 ->take(10)
                 ->get(),
-            
+
             // Prix moyen par marque
             'price_by_brand' => Car::selectRaw('brand, AVG(price) as avg_price, COUNT(*) as count')
                 ->where('is_published', true)
@@ -250,21 +253,21 @@ class AdminController extends Controller
                 ->orderBy('avg_price', 'desc')
                 ->take(6)
                 ->get(),
-            
+
             // Évolution mensuelle des inscriptions
             'users_by_month' => User::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
                 ->whereYear('created_at', date('Y'))
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get(),
-            
+
             // Évolution mensuelle des voitures
             'cars_by_month' => Car::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
                 ->whereYear('created_at', date('Y'))
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get(),
-            
+
             // Favoris par mois
             'favorites_by_month' => Favorite::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
                 ->whereYear('created_at', date('Y'))
@@ -293,13 +296,13 @@ class AdminController extends Controller
                     ->orderBy('date')
                     ->get(),
             ],
-            
+
             // Analyse de la performance par heure (activité des utilisateurs)
             'hourly_activity' => User::selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
                 ->groupBy('hour')
                 ->orderBy('hour')
                 ->get(),
-            
+
             // Statistiques de croissance
             'growth_stats' => [
                 'users_growth' => [
@@ -315,7 +318,7 @@ class AdminController extends Controller
                         ->whereYear('created_at', now()->subMonth()->year)->count(),
                 ],
             ],
-            
+
             // Analyse des prix par tranche
             'price_ranges' => [
                 'budget' => Car::where('is_published', true)
@@ -325,7 +328,7 @@ class AdminController extends Controller
                 'luxury' => Car::where('is_published', true)
                     ->where('price', '>', 50000)->count(),
             ],
-            
+
             // Top des villes (si vous avez une colonne city)
             'top_cities' => Car::selectRaw('city, COUNT(*) as count')
                 ->where('is_published', true)
@@ -334,7 +337,7 @@ class AdminController extends Controller
                 ->orderBy('count', 'desc')
                 ->take(8)
                 ->get(),
-            
+
             // Analyse des années de voitures
             'car_years' => Car::selectRaw('year, COUNT(*) as count, AVG(price) as avg_price')
                 ->where('is_published', true)
@@ -363,10 +366,10 @@ class AdminController extends Controller
         // Filtre par recherche
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('url', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('url', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -409,4 +412,4 @@ class AdminController extends Controller
 
         return view('admin.bookmarks.index', compact('bookmarks', 'users', 'categories'));
     }
-} 
+}

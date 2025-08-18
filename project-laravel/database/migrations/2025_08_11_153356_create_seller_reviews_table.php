@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('comment')->nullable();
             $table->boolean('is_verified')->default(false);
             $table->timestamps();
-            
+
             // Un utilisateur ne peut noter un vendeur qu'une seule fois par voiture
             $table->unique(['reviewer_id', 'seller_id', 'car_id']);
         });

@@ -13,7 +13,7 @@ class Subscription extends Model
         'subscriber_id',
         'seller_id',
         'is_active',
-        'subscribed_at'
+        'subscribed_at',
     ];
 
     protected $casts = [
@@ -64,11 +64,11 @@ class Subscription extends Model
         return static::updateOrCreate(
             [
                 'subscriber_id' => $subscriberId,
-                'seller_id' => $sellerId
+                'seller_id' => $sellerId,
             ],
             [
                 'is_active' => true,
-                'subscribed_at' => now()
+                'subscribed_at' => now(),
             ]
         );
     }

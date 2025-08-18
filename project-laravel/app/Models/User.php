@@ -65,6 +65,7 @@ class User extends Authenticatable
         $plans = config('plans');
         $planKey = $this->plan ?? 'standard';
         $limit = $plans[$planKey]['car_limit'] ?? $plans['standard']['car_limit'];
+
         return $limit === null ? null : (int) $limit;
     }
 
@@ -81,6 +82,7 @@ class User extends Authenticatable
             return true; // illimité
         }
         $current = $this->cars()->count();
+
         return $current < $limit;
     }
 
@@ -217,6 +219,7 @@ class User extends Authenticatable
         if ($reviews->count() === 0) {
             return null;
         }
+
         return round($reviews->avg('rating'), 1);
     }
 

@@ -26,7 +26,7 @@ class CarSeeder extends Seeder
                 'fuel_type' => 'Essence',
                 'vin' => 'LEXUS123456789',
                 'address' => 'Douala, Cameroun',
-                'phone' => '+237 123456789'
+                'phone' => '+237 123456789',
             ],
             [
                 'brand' => 'Toyota',
@@ -41,7 +41,7 @@ class CarSeeder extends Seeder
                 'fuel_type' => 'Diesel',
                 'vin' => 'TOYOTA987654321',
                 'address' => 'Douala, Cameroun',
-                'phone' => '+237 987654321'
+                'phone' => '+237 987654321',
             ],
             [
                 'brand' => 'Renault',
@@ -56,7 +56,7 @@ class CarSeeder extends Seeder
                 'fuel_type' => 'Essence',
                 'vin' => 'RENAULT456789123',
                 'address' => 'Yaoundé, Cameroun',
-                'phone' => '+237 456789123'
+                'phone' => '+237 456789123',
             ],
             [
                 'brand' => 'Ford',
@@ -71,7 +71,7 @@ class CarSeeder extends Seeder
                 'fuel_type' => 'Diesel',
                 'vin' => 'FORD789123456',
                 'address' => 'Douala, Cameroun',
-                'phone' => '+237 789123456'
+                'phone' => '+237 789123456',
             ],
             [
                 'brand' => 'Volkswagen',
@@ -86,19 +86,19 @@ class CarSeeder extends Seeder
                 'fuel_type' => 'Essence',
                 'vin' => 'VW123789456',
                 'address' => 'Yaoundé, Cameroun',
-                'phone' => '+237 123789456'
-            ]
+                'phone' => '+237 123789456',
+            ],
         ];
 
         // Créer un utilisateur par défaut si aucun n'existe
         $defaultUser = \App\Models\User::first();
-        
-        if (!$defaultUser) {
+
+        if (! $defaultUser) {
             $defaultUser = \App\Models\User::create([
                 'name' => 'Default User',
                 'email' => 'default@example.com',
                 'password' => bcrypt('password'),
-                'phone' => '1234567890'
+                'phone' => '1234567890',
             ]);
         }
 
@@ -106,10 +106,10 @@ class CarSeeder extends Seeder
             $carData['user_id'] = $defaultUser->id;
             $carData['is_published'] = true;
             $car = Car::create($carData);
-            
+
             // Ajouter des images pour toutes les voitures
             $images = [];
-            
+
             if ($car->brand === 'Lexus' && $car->model === 'RX200t') {
                 $images = [
                     'cars/Lexus-RX200t-2016/1.jpeg',
@@ -118,53 +118,53 @@ class CarSeeder extends Seeder
                     'cars/Lexus-RX200t-2016/4.jpeg',
                     'cars/Lexus-RX200t-2016/5.jpeg',
                     'cars/Lexus-RX200t-2016/6.jpeg',
-                    'cars/Lexus-RX200t-2016/7.jpeg'
+                    'cars/Lexus-RX200t-2016/7.jpeg',
                 ];
             } elseif ($car->brand === 'Toyota' && $car->model === 'Hilux') {
                 $images = [
                     'cars/Lexus-RX200t-2016/1.jpeg',
                     'cars/Lexus-RX200t-2016/2.jpeg',
-                    'cars/Lexus-RX200t-2016/3.jpeg'
+                    'cars/Lexus-RX200t-2016/3.jpeg',
                 ];
             } elseif ($car->brand === 'Renault' && $car->model === 'Clio') {
                 $images = [
                     'cars/Lexus-RX200t-2016/4.jpeg',
                     'cars/Lexus-RX200t-2016/5.jpeg',
-                    'cars/Lexus-RX200t-2016/6.jpeg'
+                    'cars/Lexus-RX200t-2016/6.jpeg',
                 ];
             } elseif ($car->brand === 'Ford' && $car->model === 'Ranger') {
                 $images = [
                     'cars/Lexus-RX200t-2016/2.jpeg',
                     'cars/Lexus-RX200t-2016/3.jpeg',
-                    'cars/Lexus-RX200t-2016/4.jpeg'
+                    'cars/Lexus-RX200t-2016/4.jpeg',
                 ];
             } elseif ($car->brand === 'Volkswagen' && $car->model === 'Golf') {
                 $images = [
                     'cars/Lexus-RX200t-2016/5.jpeg',
                     'cars/Lexus-RX200t-2016/6.jpeg',
-                    'cars/Lexus-RX200t-2016/7.jpeg'
+                    'cars/Lexus-RX200t-2016/7.jpeg',
                 ];
             }
-            
+
             // Copier les images du dossier public vers le storage
             foreach ($images as $index => $imagePath) {
-                $sourcePath = public_path('images/' . $imagePath);
-                
+                $sourcePath = public_path('images/'.$imagePath);
+
                 if (file_exists($sourcePath)) {
                     // Copier l'image vers le storage
                     $storagePath = \Illuminate\Support\Facades\Storage::disk('public')->putFileAs(
                         'cars',
                         $sourcePath,
-                        $car->id . '_' . $index . '_' . basename($imagePath)
+                        $car->id.'_'.$index.'_'.basename($imagePath)
                     );
-                    
+
                     \App\Models\CarImage::create([
                         'car_id' => $car->id,
                         'image' => $storagePath,
-                        'position' => $index
+                        'position' => $index,
                     ]);
                 }
             }
         }
     }
-} 
+}

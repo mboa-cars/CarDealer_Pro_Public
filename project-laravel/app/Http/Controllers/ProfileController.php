@@ -43,7 +43,7 @@ class ProfileController extends Controller
                     ->withErrors(['phone' => 'Ce numéro de téléphone est déjà utilisé par un autre utilisateur.'])
                     ->withInput();
             }
-            
+
             // Re-throw les autres erreurs
             throw $e;
         }

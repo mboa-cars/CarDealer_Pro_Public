@@ -16,6 +16,8 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <!-- Montserrat for titles (ExtraBold) -->
+    <link href="https://fonts.bunny.net/css?family=montserrat:800&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -247,6 +249,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
+    /* Title font setup */
+    :root { --font-title: 'Montserrat', 'Figtree', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    h1, h2, .cta-title, .footer-section-title {
+        font-family: var(--font-title) !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.02em;
+    }
+    
     /* Logo Animations */
     .logo {
         transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);

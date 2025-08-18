@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('car_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            
+
             // Empêcher les doublons
             $table->unique(['user_id', 'car_id']);
         });

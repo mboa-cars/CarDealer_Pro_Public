@@ -25,5 +25,3 @@ class PlanUpgraded extends Mailable
             ]);
     }
 }
-
-

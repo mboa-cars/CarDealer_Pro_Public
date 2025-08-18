@@ -9,11 +9,11 @@ class SellerReview extends Model
 {
     protected $fillable = [
         'reviewer_id',
-        'seller_id', 
+        'seller_id',
         'car_id',
         'rating',
         'comment',
-        'is_verified'
+        'is_verified',
     ];
 
     protected $casts = [

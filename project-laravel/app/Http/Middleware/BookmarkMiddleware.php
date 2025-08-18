@@ -23,22 +23,22 @@ class BookmarkMiddleware
         $response = $next($request);
 
         // Seulement pour les réponses HTML, les utilisateurs authentifiés et les méthodes GET
-        if ($request->user() && 
+        if ($request->user() &&
             $request->isMethod('GET') &&
-            $response->headers->get('content-type') && 
+            $response->headers->get('content-type') &&
             str_contains($response->headers->get('content-type'), 'text/html')) {
-            
+
             $content = $response->getContent();
-            
+
             // Injecter les boutons bookmark avant la fermeture du body
             if (strpos($content, '</body>') !== false) {
                 $bookmarkButton = view('components.bookmark-button')->render();
                 $bookmarkQuickAdd = view('components.bookmark-quick-add')->render();
-                $content = str_replace('</body>', $bookmarkQuickAdd . $bookmarkButton . '</body>', $content);
+                $content = str_replace('</body>', $bookmarkQuickAdd.$bookmarkButton.'</body>', $content);
                 $response->setContent($content);
             }
         }
 
         return $response;
     }
-} 
+}

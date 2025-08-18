@@ -10,22 +10,23 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('cars', function (Blueprint $table) {
-        $table->id();
-        $table->string('brand');
-        $table->string('model');
-        $table->integer('year');
-        $table->decimal('price', 10, 2);
-        $table->text('description')->nullable();
-        $table->string('image')->nullable();
-        $table->string('type')->nullable();
-        $table->string('city')->nullable();
-        $table->integer('mileage')->nullable();
-        $table->string('state')->nullable();
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('cars', function (Blueprint $table) {
+            $table->id();
+            $table->string('brand');
+            $table->string('model');
+            $table->integer('year');
+            $table->decimal('price', 10, 2);
+            $table->text('description')->nullable();
+            $table->string('image')->nullable();
+            $table->string('type')->nullable();
+            $table->string('city')->nullable();
+            $table->integer('mileage')->nullable();
+            $table->string('state')->nullable();
+            $table->timestamps();
+        });
+    }
+
     /**
      * Reverse the migrations.
      */

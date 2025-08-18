@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Bookmark;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class BookmarkSeeder extends Seeder
 {
@@ -26,7 +26,7 @@ class BookmarkSeeder extends Seeder
                     'icon' => 'fas fa-car',
                     'category' => 'cars',
                     'position' => 1,
-                    'is_favorite' => true
+                    'is_favorite' => true,
                 ],
                 [
                     'title' => 'Mes favoris',
@@ -36,7 +36,7 @@ class BookmarkSeeder extends Seeder
                     'icon' => 'fas fa-heart',
                     'category' => 'favorites',
                     'position' => 2,
-                    'is_favorite' => false
+                    'is_favorite' => false,
                 ],
                 [
                     'title' => 'Ajouter une voiture',
@@ -46,7 +46,7 @@ class BookmarkSeeder extends Seeder
                     'icon' => 'fas fa-plus-circle',
                     'category' => 'cars',
                     'position' => 3,
-                    'is_favorite' => false
+                    'is_favorite' => false,
                 ],
                 [
                     'title' => 'Mon profil',
@@ -56,8 +56,8 @@ class BookmarkSeeder extends Seeder
                     'icon' => 'fas fa-user-cog',
                     'category' => 'profile',
                     'position' => 4,
-                    'is_favorite' => false
-                ]
+                    'is_favorite' => false,
+                ],
             ];
 
             // Ajouter des bookmarks pour les administrateurs
@@ -71,7 +71,7 @@ class BookmarkSeeder extends Seeder
                         'icon' => 'fas fa-tachometer-alt',
                         'category' => 'admin',
                         'position' => 5,
-                        'is_favorite' => true
+                        'is_favorite' => true,
                     ],
                     [
                         'title' => 'Gestion utilisateurs',
@@ -81,7 +81,7 @@ class BookmarkSeeder extends Seeder
                         'icon' => 'fas fa-users',
                         'category' => 'admin',
                         'position' => 6,
-                        'is_favorite' => false
+                        'is_favorite' => false,
                     ],
                     [
                         'title' => 'Gestion voitures',
@@ -91,8 +91,8 @@ class BookmarkSeeder extends Seeder
                         'icon' => 'fas fa-car',
                         'category' => 'admin',
                         'position' => 7,
-                        'is_favorite' => false
-                    ]
+                        'is_favorite' => false,
+                    ],
                 ];
                 $bookmarks = array_merge($bookmarks, $adminBookmarks);
             }
@@ -100,9 +100,9 @@ class BookmarkSeeder extends Seeder
             // Créer les bookmarks
             foreach ($bookmarks as $bookmarkData) {
                 Bookmark::create(array_merge($bookmarkData, [
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
                 ]));
             }
         }
     }
-} 
+}

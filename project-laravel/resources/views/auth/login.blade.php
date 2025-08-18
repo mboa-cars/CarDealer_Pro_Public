@@ -52,12 +52,12 @@
                         <form method="POST" action="{{ route('login') }}" id="loginForm">
                             @csrf
 
-                            <!-- Email Address -->
+                            <!-- Email or Phone -->
                             <div class="mb-3">
-                                <label for="email" class="form-label fw-semibold" style="color: #555; font-size: 0.9rem;">
-                                    <i class="fas fa-envelope me-1" style="color: #F26522;"></i>Your Email
+                                <label for="login" class="form-label fw-semibold" style="color: #555; font-size: 0.9rem;">
+                                    <i class="fas fa-user me-1" style="color: #F26522;"></i>Your Email or Phone
                                 </label>
-                                <input type="email" id="email" name="email" class="form-control modern-input" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="Enter your email address">
+                                <input type="text" id="login" name="login" class="form-control modern-input" value="{{ old('login') }}" required autofocus autocomplete="username" placeholder="Enter your email address or phone number">
                             </div>
 
                             <!-- Password -->
@@ -113,6 +113,8 @@
                                     </div>
                                 </div>
                             </div>
+
+                            
 
                             <!-- Register Link -->
                             <div class="text-center">
@@ -345,5 +347,7 @@ document.querySelectorAll('.alert').forEach(alert => {
         setTimeout(() => alert.remove(), 300);
     }, 5000);
 });
+
+// (OTP via SMS removed per request)
 </script>
 @endpush
